@@ -318,6 +318,18 @@
             }
         }
 
+    //change Brick-Color, depending on hits left 
+        function changeBrickColor(brickTC){
+            switch(brickTC.hitsToGo){
+                case 2:
+                    brickTC.color = "red";
+                    break;
+                case 3: case 4:
+                    brickTC.color = "green";
+                    break; 
+            }
+        }
+
     //move (detect collisions and draw) Ball
         function moveBall() {
             collisionDetect();
@@ -366,6 +378,7 @@
             for(var i = 0; i<bricks.length; i++) {
                 if (rectCollision(bricks[i].x, bricks[i].y, brickWidth, brickHeight)) {
                     playBrickSound(bricks[i].hitsToGo);
+                    changeBrickColor(bricks[i]);
                     bricks[i].hitsToGo -=1;
                     if(bricks[i].hitsToGo<=0){
                         score += bricks[i].value;
@@ -569,13 +582,16 @@
                         }
                         break;
                     case 32: //Space
-                      if (start) {
-                        leerpress = true;
-                        moveX = 2.5;
-                        moveY = (-2.5);
-                        start = false;
+                        if (start) {
+                            leerpress = true;
+                            moveX = 2.5;
+                            moveY = (-2.5);
+                            start = false;
+                        }
                         break;
-                    }
+                    case 66:
+                      bot = !bot;
+                      break;
                 }
             }
         }
