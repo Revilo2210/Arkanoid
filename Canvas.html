@@ -70,7 +70,6 @@
 
 
 //Klassen
-        //Brick-class Frage: Warum die globalen Variablen für Höhe und Weite übergeben?
         class Brick {
             constructor(x, y) {
                 this.x = x;
@@ -78,6 +77,7 @@
                 this.hitsToGo = 1;
                 this.powerUp = 0;
                 this.color = "red";
+                this.value = 5;
             }
         }
 
@@ -88,6 +88,7 @@
                 this.hitsToGo = 3;
                 this.powerUp = 1;
                 this.color="green";
+                this.value = 20;
             }
         }
 
@@ -98,6 +99,7 @@
                 this.hitsToGo = 5;
                 this.powerUp = 2;
                 this.color = "blue";
+                this.value = 50;
             }
         }
 
@@ -297,77 +299,116 @@
 //Divers
         function collisionDetect(){
 
-            if ((ballY + radius) >= paddleY){
-                if(ballX > paddleX && ballX < paddleX + paddleBreite){
-                    moveY *= (-1);
+            if(!rectCollision(paddleX, paddleY, paddleBreite, paddleHoehe)){
+                if (ballY > gameCanvas.height) {
+                    ballDown = true;
+                    lives-=1;
+                    WriteFinish();
                 } else {
-                    if (ballY > gameCanvas.height) {
-                        ballDown = true;
-                        lives-=1;
-                        WriteFinish();
-                    }   
-                }
-            } else {
-                if (ballX + radius >= gameCanvas.width || ballX - radius <= 0)
-                    moveX *= (-1);
-                if (ballY <= 0 + radius)
-                    moveY *= (-1);
+                    if (ballX + radius >= gameCanvas.width || ballX - radius <= 0)
+                        moveX *= (-1);
+                    if (ballY <= 0 + radius)
+                        moveY *= (-1);
 
-                for(var i = 0; i<bricks.length; i++){
-                    if (ballX - radius < bricks[i].x + brickWidth &&
-                        ballX + radius > bricks[i].x &&
-                        ballY - radius < bricks[i].y + brickHeight &&
-                        ballY + radius > bricks[i].y) {
-
-                        if(ballX > bricks[i].x+brickWidth || ballX < bricks[i].x){
-                            moveX *= -1;
-
-                            if(bricks[i].hitsToGo>3){
-                                SoundBlockMetalHard.play();
-                                SoundBlockMetalHard.currentTime=0;
-                            }
-                            else if(bricks[i].hitsToGo<=3 && bricks[i].hitsToGo>1){
-                                SoundBlockMetalSoft.play();
-                                SoundBlockMetalSoft.currentTime=0;
-                            }
-                            else{
-                                SoundBlock.play();
-                                SoundBlock.currentTime=0;
+                    if (ballY < (gameCanvas.height / 2) + brickHeight) {
+                        for(var i = 0; i<bricks.length; i++) {
+                            if (rectCollision(bricks[i].x, bricks[i].y, brickWidth, brickHeight)) {
+                                playBrickSound(bricks[i].hitsToGo);
+                                bricks[i].hitsToGo -=1;
+                                if(bricks[i].hitsToGo<=0){
+                                    score += bricks[i].value;
+                                    bricks.splice(i, 1);
+                                
+                                    if(bricks.length==0){
+                                        draw();
+                                        WriteWin();
+                                    }
+                                }
+                                break;
                             }
                         }
-
-                        if(ballY < bricks[i].y + brickHeight || ballY > bricks[i].y){
-                            moveY *= -1;
-
-                            if(bricks[i].hitsToGo>3){
-                                SoundBlockMetalHard.play();
-                                SoundBlockMetalHard.currentTime=0;
-                            }
-                            else if(bricks[i].hitsToGo<=3 && bricks[i].hitsToGo>1){
-                                SoundBlockMetalSoft.play();
-                                SoundBlockMetalSoft.currentTime=0;
-                            }
-                            else{
-                                SoundBlock.play();
-                                SoundBlock.currentTime=0;
-                            }
-                        }
-
-                        bricks[i].hitsToGo -= 1;
-
-                        if(bricks[i].hitsToGo<=0){
-                            
-                            bricks.splice(i, 1);
-                            score += 10;
-                        }
-                        if(bricks.length==0){
-                            draw();
-                            WriteWin();
-                        }
-                        break;
                     }
+                } 
+            } else {
+                if(ballY + radius < paddleY + (paddleHoehe/2)){
+                    ballY -= ballY + radius - paddleY - 0,5;
+                } else {
+                    ballY += (paddleHoehe/2) + 0,5;
+                    ballDown = true;
+                    lives-=1;
+                    WriteFinish();
                 }
-            }  
+            }
+        }  
+
+        function rectCollision(rectX, rectY, rectW, rectH){
+
+            var kathetenL = Math.sqrt((radius*radius)/2);
+
+            if(ballX >= rectX && ballX <= rectX + rectW &&                          //Ball trifft...
+                ((ballY - radius <= rectY + rectH && ballY - radius > rectY)        //... von unten
+                ||(ballY + radius <= rectY + rectH && ballY + radius > rectY))){    //... von oben
+                    moveY *= -1;
+                    return true;
+            }
+            if(ballY >= rectY && ballY <= rectY + rectH &&                          //Ball trifft...
+                ((ballX - radius <= rectX + rectW && ballX - radius > rectX)            //... von 
+                ||(ballX + radius < rectX + rectW && ballX + radius >= rectX))){         //... von
+                    moveX *= -1;
+                    return true;
+            }
+            if(ballX + kathetenL >= rectX && ballX + kathetenL < rectX + rectW){        //Ball trifft linke...
+                if(ballY - kathetenL <= rectY + rectH && ballY - kathetenL > rectY){    //... untere Ecke
+                    if(moveX>0)
+                        moveX *= -1;
+                    if(moveY<0)
+                        moveY *= -1;
+                    return true
+                }
+                if(ballY + kathetenL < rectY + rectH && ballY + kathetenL >= rectY){    //... obere Ecke
+                    if(moveX>0)
+                        moveX *= -1;
+                    if(moveY>0)
+                        moveY *= -1;
+                    
+                    return true;
+                }
+                return false;    
+            }
+            if(ballX - kathetenL > rectX && ballX - kathetenL <= rectX + rectW){        //Ball trifft rechte...  
+                if(ballY - kathetenL <= rectY + rectH && ballY - kathetenL > rectY){    //... untere Ecke
+                    if(moveX<0)
+                        moveX *= -1;
+                    if(moveY<0)
+                        moveY *= -1;
+                    return true;
+                }
+                if(ballY + kathetenL < rectY + rectH && ballY + kathetenL >= rectY){    //... obere Ecke
+                    if(moveX<0)
+                        moveX *= -1;
+                    if(moveY>0)
+                        moveY *= -1;
+                    return true;
+                }    
+            }
+            return false;
+        }
+
+        function playBrickSound(hTG){
+            switch(hTG){
+                case 1:
+                    SoundBlock.play();
+                    SoundBlock.currentTime=0;
+                    break;
+                case 2: case 3:
+                    SoundBlockMetalSoft.play();
+                    SoundBlockMetalSoft.currentTime=0;
+                    break;
+                default:
+                    SoundBlockMetalHard.play();
+                    SoundBlockMetalHard.currentTime=0;
+                    break;
+            }
         }
 
         //Paddle soll Maus folgen?
