@@ -12,7 +12,6 @@
         //Feld
         var gameCanvas;
         var gameCtx;
-
         var scoreCanvas;
         var scoreCtx;
 
@@ -20,22 +19,33 @@
         //Paddle
         var paddleX = 300;
         var paddleY;
-        var paddleBreite = 100;
-        var paddleHoehe = 20;
+        var paddleWidth = 100;
+        var paddleHeight = 20;
         var paddleMove = 20;
 
         //Ball
         var ballX;
         var ballY;
         var radius = 10;
-        var ballColor = "green";        
+        var ballColorGradient;
+
+        //Bricks
+        var bricks = [];
+        var brickHeight = 20;
+        var brickWidth = 695 / 12;
+        var brickDist = 5;
+        var brickStartX = 50;
+        var BrickStartY = 50;
 
         //Bewegung
         var moveX;
         var moveY;
-        var start = true;
+        var interval;
+        var intervalOverclocking = 5;
+        var mouseX;
 
         //Booleans
+        var start = true;
         var ballDown = false;
         var leerpress = false;
         var pause = false;
@@ -47,21 +57,10 @@
         //Gamevars
         var lives = 3;
         var level = 1;
-
         var score = 0;
 
-        var mouseX;
-        var interval;
-        var bricks = [];
-        var brickHeight = 20;
-        var brickWidth = 695 / 12;
-        var brickDist = 5;
-        var brickStartX = 50;
-        var BrickStartY = 50;
-
-        var gradient;
-
         //Sound
+        var vol = 1;
         var SoundBlockExplode = new Audio("sounds/explosion.wav"); // buffers automatically when created
         var SoundBlockMetalHard = new Audio("sounds/Metal_Hard.wav");
         var SoundBlock = new Audio("sounds/sf02.wav");
@@ -69,11 +68,9 @@
         var SoundBallDown = new Audio("sounds/Sad_Trombone.wav");
         var SoundEnde = new Audio("sounds/werner_blamage.wav");
         var SoundBackground = new Audio("sounds/Background.wav");
-        var SoundWinning = new Audio("sounds/Win.wav")
+        var SoundWinning = new Audio("sounds/Win.wav");
 
-
-
-//Klassen
+//(Block-)Klassen
         class Brick {
             constructor(x, y) {
                 this.x = x;
@@ -108,7 +105,7 @@
         }
 
 //Funktionen
-        //Initieren
+    //Initieren
         function init() {
 
             SoundBackground.play();
@@ -117,18 +114,36 @@
             gameCanvas = document.getElementById("gameCanvas");
             gameCtx = gameCanvas.getContext("2d");
 
-            gradient = gameCtx.createLinearGradient(0, 0, gameCanvas.width, 0)
-            gradient.addColorStop("0", "yellow");
-            gradient.addColorStop("0.25", "green");
-            gradient.addColorStop("0.5", "blue");
-            gradient.addColorStop("0.75", "magenta");
-            gradient.addColorStop("1.0", "red");
+            initBallColorGradient();
 
             placeScoreCanvas();
 
             showMainMenu();
         }
 
+        function initGame() {
+            scoreCanvas.style.visibility = "visible";
+            gameCanvas.style.border = "red 1px solid";
+            
+            paddleY = gameCanvas.height - paddleHeight - 10;
+
+            setBricks();
+
+            startGame();
+        }
+
+        function initBallColorGradient(){
+            ballColorGradient = gameCtx.createLinearGradient(0, 0, gameCanvas.width, 0)
+            ballColorGradient.addColorStop("0", "yellow");
+            ballColorGradient.addColorStop("0.25", "green");
+            ballColorGradient.addColorStop("0.5", "blue");
+            ballColorGradient.addColorStop("0.75", "magenta");
+            ballColorGradient.addColorStop("1.0", "red");
+        }
+
+
+//Menus
+    //Main-Menu
         function showMainMenu() {
             gameCanvas.style.background = "url('space.jpg')";
             scoreCanvas.style.visibility = "hidden";
@@ -139,32 +154,19 @@
             gameCtx.fillText("Press Enter to Start", 250, 150);
             gameCtx.stroke();
         }
-
+    //Score-Menu
         function placeScoreCanvas() {
             scoreCanvas = document.getElementById("scoreCanvas");
             scoreCtx = scoreCanvas.getContext("2d");
 
-            console.log(gameCanvas.width);
             scoreCanvas.style.left = `${gameCanvas.width + 20}px`;
             scoreCanvas.style.position = "absolute";
-
             scoreCanvas.style.border = "red 1px solid";
-        }
-
-        function initGame() {
-            scoreCanvas.style.visibility = "visible";
-            gameCanvas.style.border = "red 1px solid";
-            
-            paddleY = gameCanvas.height - paddleHoehe - 10;
-
-            setBricks();
-
-            startGame();
         }
         
         function startGame() {
 
-            ballX = paddleX + (paddleBreite / 2);
+            ballX = paddleX + (paddleWidth / 2);
             ballY = paddleY - (radius+1);
             moveX = 0;
             moveY = 0;
@@ -173,13 +175,13 @@
             start = true;
             leerpress = false;
 
-            interval = setInterval(draw, 1);
+            interval = setInterval(draw, intervalOverclocking);
 
-            mouseX = document.all ? event.offsetX : event.pageX;
+            //mouseX = document.all ? event.offsetX : event.pageX;
         }
 
-//Write
-        //"Finish-Screen"
+//Event-Screens
+    //"Fail-Screen"
         function WriteFinish() {
             clearInterval(interval);
             gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
@@ -203,7 +205,7 @@
                 gameCtx.stroke();
             }
         }
-
+    //Win-Screen
         function WriteWin(){
             SoundWinning.play();
             SoundEnde.currentTime=0;
@@ -216,9 +218,10 @@
         }
 
 //Draw
+    //draw Game
         function draw() {
-			
             gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+
             drawBricks();
             drawPaddle();
             moveBall();
@@ -229,9 +232,9 @@
             }
         }
 
+    //draw Score
         function drawScore() {
             scoreCtx.clearRect(0, 0, scoreCanvas.width, scoreCanvas.height);
-            
             scoreCtx.font = "30px Arial";
 
             //Score
@@ -256,58 +259,7 @@
             scoreCtx.stroke();
         }
 
-        function setBricks(){
-            var posAnX = brickStartX;
-            var posAnY = BrickStartY;
-            switch(level){
-                case 1:
-                console.log("LEVEL 1");
-                   while((posAnY + brickHeight) < (gameCanvas.height / 2)){
-                       console.log("h " + posAnY);
-                       while(posAnX + brickWidth + brickStartX <= gameCanvas.width){
-                           switch(Math.floor(Math.random() * 6)){
-                               case 1: bricks.push(new FastBrick(posAnX, posAnY)); break;
-                               case 5: bricks.push(new HardBrick(posAnX, posAnY)); break;
-                               case 2: break;
-                               default: bricks.push(new Brick(posAnX, posAnY)); break;
-                           }
-                           posAnX += brickWidth + brickDist;
-                       }
-                       posAnX = brickStartX;
-                       posAnY += brickHeight + brickDist;
-                   }
-                   console.log(bricks);
-                   break;
-                default:
-                console.log("DEFAULT");
-                    while(posAnY + brickHeight < gameCanvas.height / 2){
-                        while(posAnX + brickWidth + brickStartX <= gameCanvas.width){
-                            bricks.push(new Brick(posAnX, posAnY));
-                            posAnX += brickWidth + brickDist;
-                        }
-                        posAnY += brickHeight + brickDist;
-                    }
-                    break; 
-            }
-        }
-
-        function drawBricks() {
-            bricks.forEach(brick => {
-                gameCtx.fillStyle = brick.color;
-                gameCtx.fillRect(brick.x, brick.y, brickWidth, brickHeight);
-                gameCtx.stroke();
-            });
-        }
-
-        function drawBall() {
-            gameCtx.beginPath();
-            gameCtx.arc(ballX, ballY, radius, 0, 2 * Math.PI);
-            gameCtx.fillStyle = gradient;
-            gameCtx.fill();
-            gameCtx.stroke();
-        }
-
-        //Paddle zeichnen
+    //draw Paddle
         function drawPaddle() {
 
             if (bot == true){
@@ -325,55 +277,122 @@
             gameCtx.fillRect(paddleX, paddleY, paddleBreite, paddleHoehe);
         }
 
-//Divers
+    //draw Bricks from bricks-Array
+        function drawBricks() {
+            bricks.forEach(brick => {
+                gameCtx.fillStyle = brick.color;
+                gameCtx.fillRect(brick.x, brick.y, brickWidth, brickHeight);
+                gameCtx.stroke();
+            });
+        }
+
+    //support-method to initialize bricks-Array
+        function setBricks(){
+            var posAnX = brickStartX;
+            var posAnY = BrickStartY;
+            switch(level){
+                case 1:
+                   while((posAnY + brickHeight) < (gameCanvas.height / 2)){
+                       while(posAnX + brickWidth + brickStartX <= gameCanvas.width){
+                           switch(Math.floor(Math.random() * 6)){
+                               case 1: bricks.push(new FastBrick(posAnX, posAnY)); break;
+                               case 5: bricks.push(new HardBrick(posAnX, posAnY)); break;
+                               case 2: break;
+                               default: bricks.push(new Brick(posAnX, posAnY)); break;
+                           }
+                           posAnX += brickWidth + brickDist;
+                       }
+                       posAnX = brickStartX;
+                       posAnY += brickHeight + brickDist;
+                   }
+                   break;
+                default:
+                    while(posAnY + brickHeight < gameCanvas.height / 2){
+                        while(posAnX + brickWidth + brickStartX <= gameCanvas.width){
+                            bricks.push(new Brick(posAnX, posAnY));
+                            posAnX += brickWidth + brickDist;
+                        }
+                        posAnY += brickHeight + brickDist;
+                    }
+                    break; 
+            }
+        }
+
+    //move (detect collisions and draw) Ball
+        function moveBall() {
+            collisionDetect();
+            ballX += moveX;
+            ballY += moveY;
+            drawBall();
+        }
+
+    //draw Ball
+        function drawBall() {
+            gameCtx.beginPath();
+            gameCtx.arc(ballX, ballY, radius, 0, 2 * Math.PI);
+            gameCtx.fillStyle = ballColorGradient;
+            gameCtx.fill();
+            gameCtx.stroke();
+        }
+
+//Collision-Detection
+    //complete check
         function collisionDetect(){
 
-            if(!rectCollision(paddleX, paddleY, paddleBreite, paddleHoehe)){
+            if(!rectCollision(paddleX, paddleY, paddleWidth, paddleHeight)){
                 if (ballY > gameCanvas.height) {
                     ballDown = true;
                     lives-=1;
                     WriteFinish();
                 } else {
-                    if (ballX + radius >= gameCanvas.width || ballX - radius <= 0)
+                    if (ballY < (gameCanvas.height / 2) + brickHeight) {
+                        brickCollision();
+                    }
+                    if ((ballX + radius >= gameCanvas.width && moveX > 0) 
+                    || (ballX - radius <= 0 && moveX < 0)){
                         moveX *= (-1);
+                    }
                     if (ballY <= 0 + radius)
                         moveY *= (-1);
 
-                    if (ballY < (gameCanvas.height / 2) + brickHeight) {
-                        for(var i = 0; i<bricks.length; i++) {
-                            if (rectCollision(bricks[i].x, bricks[i].y, brickWidth, brickHeight)) {
-                                playBrickSound(bricks[i].hitsToGo);
-                                bricks[i].hitsToGo -=1;
-                                if(bricks[i].hitsToGo<=0){
-                                    
-                                    score += bricks[i].value;
-                                    
-                                    ballColor = bricks[i].color;
-                                    
-                                    bricks.splice(i, 1);
-
-                                    if(bricks.length==0){
-                                        draw();
-                                        WriteWin();
-                                    }
-                                }
-                                break;
-                            }
-                        }
-                    }
                 } 
             } else {
-                if(ballY + radius < paddleY + (paddleHoehe/2)){
-                    ballY -= ballY + radius - paddleY - 0,5;
-                } else {
-                    ballY += (paddleHoehe/2) + 0,5;
-                    ballDown = true;
-                    lives-=1;
-                    WriteFinish();
+                paddleCollision();
+            }
+        } 
+
+    //support-method brick-collision logic
+        function brickCollision(){
+            for(var i = 0; i<bricks.length; i++) {
+                if (rectCollision(bricks[i].x, bricks[i].y, brickWidth, brickHeight)) {
+                    playBrickSound(bricks[i].hitsToGo);
+                    bricks[i].hitsToGo -=1;
+                    if(bricks[i].hitsToGo<=0){
+                        score += bricks[i].value;
+                        bricks.splice(i, 1);
+                        if(bricks.length==0){
+                            draw();
+                            WriteWin();
+                        }
+                    }
+                    break;
                 }
             }
-        }  
+        }
 
+    //support-method paddle-collision logic
+        function paddleCollision(){
+            if(ballY + radius < paddleY + (paddleHeight/2)){
+                ballY -= ballY + radius - paddleY - 0,5;
+            } else {
+                ballY += (paddleHeight/2) + 0,5;
+                ballDown = true;
+                lives-=1;
+                WriteFinish();
+            }
+        }
+
+    //support-method rect-collision (paddle & bricks) check
         function rectCollision(rectX, rectY, rectW, rectH){
 
             var kathetenL = Math.sqrt((radius*radius)/2);
@@ -385,8 +404,8 @@
                     return true;
             }
             if(ballY >= rectY && ballY <= rectY + rectH &&                          //Ball trifft...
-                ((ballX - radius <= rectX + rectW && ballX - radius > rectX)            //... von 
-                ||(ballX + radius < rectX + rectW && ballX + radius >= rectX))){         //... von
+                ((ballX - radius <= rectX + rectW && ballX - radius > rectX)        //... von links 
+                ||(ballX + radius < rectX + rectW && ballX + radius >= rectX))){    //... von rechts
                     moveX *= -1;
                     return true;
             }
@@ -427,6 +446,7 @@
             return false;
         }
 
+//Sounds
         function playBrickSound(hTG){
             switch(hTG){
                 case 1:
@@ -444,7 +464,7 @@
             }
         }
 
-        //Paddle soll Maus folgen?
+//Paddle follows mouse
         function show_position(event) {
             mouseX = document.all ? event.offsetX : event.pageX;
 
@@ -468,148 +488,102 @@
             } 
         }
 
-        //Ball bewegen
-        function moveBall() {
-            
-            collisionDetect();
-            ballX += moveX;
-            ballY += moveY;
-            drawBall();
+  
+        function soundHandler() {
+              if(vol>0){
+                vol=0;
+              } else{ 
+                vol = 1;
+              }
+                  SoundBackground.volume = vol == 0 ? 0: 0.4;
+                  SoundBlockExplode.volume = vol;
+                  SoundBlockMetalHard.volume = vol;
+                  SoundBlock.volume = vol;     
+                  SoundBlockMetalSoft.volume = vol;               
+                  SoundBallDown.volume = vol;                 
+                  SoundEnde.volume = vol;
+                  SoundWinning.volume = vol;
+              }
+          
         }
-
-        //Verwaltet Tastendruck
-        function Tastenhandler(ev) {
-            var key_press = String.fromCharCode(ev.keyCode);
+//key-handler
+        function keyHandler(ev) {
             var key_code = ev.keyCode;
-
+            
+            if(key_code == 13){
+                    soundHandler();
+          
             if(inMainMenu) {
                 if(key_code == 13){
                         inMainMenu = false;
                         initGame();
                 }
-                if(key_press == "M"){
-                    if(mute == false){
-                        mute = true;
-                        SoundBackground.volume = 0;
-                        SoundBlockExplode.volume = 0;
-                        SoundBlockMetalHard.volume = 0;
-                        SoundBlock.volume = 0;     
-                        SoundBlockMetalSoft.volume = 0;               
-                        SoundBallDown.volume = 0;                 
-                        SoundEnde.volume = 0;
-                        SoundWinning.volume = 0;
-                    }
-                    else{
-                        mute = false;
-                        SoundBackground.volume = 0.4;
-                        SoundBlockExplode.volume = 1;
-                        SoundBlockMetalHard.volume = 1;
-                        SoundBlock.volume = 1;     
-                        SoundBlockMetalSoft.volume = 1;               
-                        SoundBallDown.volume = 1;                 
-                        SoundEnde.volume = 1;
-                        SoundWinning.volume = 1;
-                    }
-                }
-                    
-            } 
-            else {
-                switch (key_press){                   
-                    case "D":
-                    if ((paddleX + paddleBreite) < gameCanvas.width) {
-                        paddleX += paddleMove;
-                        if (moveX == 0 && moveY == 0)
-                            ballX += paddleMove;
-                    }
-                    break;
-                case "A":
-                    if (paddleX >= 10) {
-                        paddleX -= paddleMove;
-                        if (moveX == 0 && moveY == 0)
-                            ballX -= paddleMove;
-                    }
-                    break;
-                case "N":
-                    if (ballDown == true) {
-						pause = false;
-                        startGame();
-                    }
-                    break;
-                case "F":
-                    moveX *= 2;
-                    moveY *= 2;
-                    paddleMove *= 2;
-                    break;
-
-                case "M": //Mute
-                    if(mute == false){
-                        mute = true;
-                        SoundBackground.volume = 0;
-                        SoundBlockExplode.volume = 0;
-                        SoundBlockMetalHard.volume = 0;
-                        SoundBlock.volume = 0;     
-                        SoundBlockMetalSoft.volume = 0;               
-                        SoundBallDown.volume = 0;                 
-                        SoundEnde.volume = 0;
-                        SoundWinning.volume = 0;
-                    }
-                    else{
-                        mute = false;
-                        SoundBackground.volume = 0.4;
-                        SoundBlockExplode.volume = 1;
-                        SoundBlockMetalHard.volume = 1;
-                        SoundBlock.volume = 1;     
-                        SoundBlockMetalSoft.volume = 1;               
-                        SoundBallDown.volume = 1;                 
-                        SoundEnde.volume = 1;
-                        SoundWinning.volume = 1;
-                    }
-                    break;
-                case "G":
-                    moveX /= 2;
-                    moveY /= 2;
-                    paddleMove /= 2;
-                    break;
-
-                case "B":
-                    if(bot == false){
-                        bot = true;
-                    }
-                    else{
-                        bot = false;
-                    }
-                    break;
-
-				case "P": // Pause
-                    if(pause == false && ballDown == false){
-                        gameCtx.font = "60px Arial";
-                        gameCtx.fillStyle = "white";
-                        gameCtx.fillText("Pause", 300, 300);
-                        pause = true;
-                        clearInterval(interval);
-                        SoundBackground.pause();
-                    }
-                    else if(pause ==  true && ballDown == false){
-                        pause = false;
-                        interval = setInterval(draw, 10);
-                        SoundBackground.play();
-                    }
-                    break;
-                default:
-                    if (key_code == 32 && start) {
+            } else {
+                switch (key_code){                
+                    case 68: //D
+                    case 39: //Right Arrow
+                        if ((paddleX + paddleWidth) < gameCanvas.width) {
+                            paddleX += paddleMove;
+                            if (moveX == 0 && moveY == 0)
+                                ballX += paddleMove;
+                        }
+                        break;
+                    case 65: //A
+                    case 37: //Left Arrow
+                        if (paddleX >= 10) {
+                            paddleX -= paddleMove;
+                            if (moveX == 0 && moveY == 0)
+                                ballX -= paddleMove;
+                        }
+                        break;
+                    case 78: //N
+                        if (ballDown == true && lives > 0) {
+                            pause = false;
+                            startGame();
+                        }
+                        break;
+                    case 70: //F
+                        moveX *= 2;
+                        moveY *= 2;
+                        paddleMove *= 2;
+                        break;
+                    case 71: //G
+                        moveX /= 2;
+                        moveY /= 2;
+                        paddleMove /= 2;
+                        break;
+                    case 80: //P
+                        if(pause == false && ballDown == false) {
+                            gameCtx.font = "60px Arial";
+                            gameCtx.fillStyle = "white";
+                            gameCtx.fillText("Pause", 300, 300);
+                            pause = true;
+                            clearInterval(interval);
+                            SoundBackground.pause();
+                        } else {
+                            if(pause ==  true && ballDown == false){
+                                pause = false;
+                                interval = setInterval(draw, intervalOverclocking);
+                                SoundBackground.play();
+                            }
+                        }
+                        break;
+                    case 32: //Space
+                      if (start) {
                         leerpress = true;
                         moveX = 2.5;
                         moveY = (-2.5);
                         start = false;
+                        break;
                     }
                 }
             }
         }
 
-//Durchführung
+//Execution
         document.addEventListener("DOMContentLoaded", init, false);
         document.addEventListener("mousemove", show_position, false);
-        document.addEventListener("keydown", Tastenhandler, false);
+        document.addEventListener("keydown", keyHandler, false);
     </script>
 </head>
 
