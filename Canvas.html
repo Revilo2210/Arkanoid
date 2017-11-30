@@ -121,10 +121,19 @@
             scoreCanvas.style.border = "red 1px solid";
         }
 
-        function startGame() {
+        function initGame() {
             scoreCanvas.style.visibility = "visible";
             gameCanvas.style.border = "red 1px solid";
+            
             paddleY = gameCanvas.height - paddleHoehe - 10;
+
+            setBricks();
+
+            startGame();
+        }
+        
+        function startGame() {
+
             ballX = paddleX + (paddleBreite / 2);
             ballY = paddleY - (radius+1);
             moveX = 0;
@@ -133,9 +142,6 @@
             ballDown = false;
             start = true;
             leerpress = false;
-
-            setBricks();
-            
 
             interval = setInterval(draw, 1);
 
@@ -383,7 +389,7 @@
                 case "N":
                     if (ballDown == true) {
 						pause = false;
-                        init();
+                        startGame();
                     }
                     break;
                 case "F":
@@ -399,7 +405,7 @@
 				case "P":
                     if(pause == false && ballDown == false){
                         gameCtx.font = "60px Arial";
-                        gameCtx.fillStyle = "black";
+                        gameCtx.fillStyle = "white";
                         gameCtx.fillText("Pause", 300, 300);
                         pause = true;
                     }
@@ -418,7 +424,7 @@
 
                     if(key_code == 13 && inMainMenu){
                         inMainMenu = false;
-                        startGame();
+                        initGame();
                     }
                     break;
             }
