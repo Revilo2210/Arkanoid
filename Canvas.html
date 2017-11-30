@@ -58,6 +58,17 @@
         var brickStartX = 50;
         var BrickStartY = 50;
 
+        //Sound
+        var SoundBlockExplode = new Audio("sounds/explosion.wav"); // buffers automatically when created
+        var SoundBlockMetalHard = new Audio("sounds/Metal_Hard.wav");
+        var SoundBlock = new Audio("sounds/sf02.wav");
+        var SoundBlockMetalSoft = new Audio("sounds/Metal_Soft.wav");
+        var SoundBallDown = new Audio("sounds/Sad_Trombone.wav");
+        var SoundEnde = new Audio("sounds/werner_blamage.wav");
+        var SoundBackground = new Audio("sounds/Background.wav");
+
+
+
 //Klassen
         //Brick-class Frage: Warum die globalen Variablen für Höhe und Weite übergeben?
         class Brick {
@@ -93,6 +104,10 @@
 //Funktionen
         //Initieren
         function init() {
+
+            SoundBackground.play();
+            SoundBackground.volume = 0.4;
+
             placeScoreCanvas();
             
             gameCanvas = document.getElementById("gameCanvas");
@@ -157,11 +172,15 @@
                 gradient.addColorStop("0.75", "yellow");
                 gradient.addColorStop("1.0", "red");
                 gameCtx.fillStyle = gradient;
+                SoundEnde.play();
+                SoundEnde.currentTime=0;
                 gameCtx.fillText("Looser!!!", 250, 50);
                 gameCtx.fillText("Press F5 to Reload", 250, 100);
                 gameCtx.fillText("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 0, 150);
                 gameCtx.stroke();
             } else{
+                SoundBallDown.play();
+                SoundBallDown.currentTime=0;
                 gameCtx.font = "30px Arial";
                 gameCtx.fillText("Ball Down", 250, 50);
                 gameCtx.fillText("Leben: " + lives, 250, 100);
@@ -180,13 +199,16 @@
 
 //Draw
         function draw() {
-			if(pause == false) {
-            	gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-            	drawBricks();
-            	drawPaddle();
-            	moveBall();
-            	drawScore();
-			}
+			
+            gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+            drawBricks();
+            drawPaddle();
+            moveBall();
+            drawScore();
+			
+            if(SoundBackground.currentTime >= 74){
+                SoundBackground.currentTime=0;
+            }
         }
 
         function drawScore() {
@@ -293,10 +315,36 @@
 
                         if(ballX > bricks[i].x+brickWidth || ballX < bricks[i].x){
                             moveX *= -1;
+
+                            if(bricks[i].hitsToGo>3){
+                                SoundBlockMetalHard.play();
+                                SoundBlockMetalHard.currentTime=0;
+                            }
+                            else if(bricks[i].hitsToGo<=3 && bricks[i].hitsToGo>1){
+                                SoundBlockMetalSoft.play();
+                                SoundBlockMetalSoft.currentTime=0;
+                            }
+                            else{
+                                SoundBlock.play();
+                                SoundBlock.currentTime=0;
+                            }
                         }
 
                         if(ballY < bricks[i].y + brickHeight || ballY > bricks[i].y){
                             moveY *= -1;
+
+                            if(bricks[i].hitsToGo>3){
+                                SoundBlockMetalHard.play();
+                                SoundBlockMetalHard.currentTime=0;
+                            }
+                            else if(bricks[i].hitsToGo<=3 && bricks[i].hitsToGo>1){
+                                SoundBlockMetalSoft.play();
+                                SoundBlockMetalSoft.currentTime=0;
+                            }
+                            else{
+                                SoundBlock.play();
+                                SoundBlock.currentTime=0;
+                            }
                         }
 
                         bricks[i].hitsToGo -= 1;
@@ -402,9 +450,13 @@
                         gameCtx.fillStyle = "black";
                         gameCtx.fillText("Pause", 300, 300);
                         pause = true;
+                        clearInterval(interval);
+                        SoundBackground.pause();
                     }
-                    else{
+                    else if(pause ==  true && ballDown == false){
                         pause = false;
+                        interval = setInterval(draw, 10);
+                        SoundBackground.play();
                     }
                     break;
                 default:
