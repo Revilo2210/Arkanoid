@@ -28,13 +28,12 @@
         var ballX;
         var ballY;
         var radius = 10;
+        var ballColor = "green";        
 
         //Bewegung
         var moveX;
         var moveY;
         var start = true;
-
-        var ballColor = "green";
 
         //Booleans
         var ballDown = false;
@@ -57,6 +56,8 @@
         var brickDist = 5;
         var brickStartX = 50;
         var BrickStartY = 50;
+
+        var gradient;
 
         //Sound
         var SoundBlockExplode = new Audio("sounds/explosion.wav"); // buffers automatically when created
@@ -110,10 +111,17 @@
             SoundBackground.play();
             SoundBackground.volume = 0.4;
 
-            placeScoreCanvas();
-            
             gameCanvas = document.getElementById("gameCanvas");
             gameCtx = gameCanvas.getContext("2d");
+
+            gradient = gameCtx.createLinearGradient(0, 0, gameCanvas.width, 0)
+            gradient.addColorStop("0", "green");
+            gradient.addColorStop("0.25", "magenta");
+            gradient.addColorStop("0.5", "blue");
+            gradient.addColorStop("0.75", "yellow");
+            gradient.addColorStop("1.0", "red");
+
+            placeScoreCanvas();
 
             showMainMenu();
         }
@@ -124,7 +132,8 @@
 
             gameCtx.font = "50px Arial";
             gameCtx.fillStyle = "white";
-            gameCtx.fillText("Main Menu", 250, 80);
+            gameCtx.fillText("Arkanoid", 250, 80);
+            gameCtx.fillText("Press Enter to Start", 250, 150);
             gameCtx.stroke();
         }
 
@@ -132,7 +141,8 @@
             scoreCanvas = document.getElementById("scoreCanvas");
             scoreCtx = scoreCanvas.getContext("2d");
 
-            scoreCanvas.style.left = "820px";
+            console.log(gameCanvas.width);
+            scoreCanvas.style.left = `${gameCanvas.width + 20}px`;
             scoreCanvas.style.position = "absolute";
 
             scoreCanvas.style.border = "red 1px solid";
@@ -173,12 +183,6 @@
             drawPaddle();
             if(lives == 0){
                 gameCtx.font = "30px Arial";
-                var gradient = gameCtx.createLinearGradient(0, 0, gameCanvas.width, 0)
-                gradient.addColorStop("0", "green");
-                gradient.addColorStop("0.25", "magenta");
-                gradient.addColorStop("0.5", "blue");
-                gradient.addColorStop("0.75", "yellow");
-                gradient.addColorStop("1.0", "red");
                 gameCtx.fillStyle = gradient;
                 SoundEnde.play();
                 SoundEnde.currentTime=0;
@@ -263,7 +267,7 @@
                    break;
                 default:
                 console.log("DEFAULT");
-                    while(posAnY + brickHeight < gameCanvas.height/2){
+                    while(posAnY + brickHeight < gameCanvas.height / 2){
                         while(posAnX + brickWidth + brickStartX <= gameCanvas.width){
                             bricks.push(new Brick(posAnX, posAnY));
                             posAnX += brickWidth + brickDist;
@@ -285,7 +289,7 @@
         function drawBall() {
             gameCtx.beginPath();
             gameCtx.arc(ballX, ballY, radius, 0, 2 * Math.PI);
-            gameCtx.fillStyle = ballColor;
+            gameCtx.fillStyle = gradient[ballX];
             gameCtx.fill();
             gameCtx.stroke();
         }
@@ -316,9 +320,13 @@
                                 playBrickSound(bricks[i].hitsToGo);
                                 bricks[i].hitsToGo -=1;
                                 if(bricks[i].hitsToGo<=0){
+                                    
                                     score += bricks[i].value;
+                                    
+                                    ballColor = bricks[i].color;
+                                    
                                     bricks.splice(i, 1);
-                                
+
                                     if(bricks.length==0){
                                         draw();
                                         WriteWin();
@@ -448,78 +456,69 @@
         function Tastenhandler(ev) {
             var key_press = String.fromCharCode(ev.keyCode);
             var key_code = ev.keyCode;
-            switch (key_press){
-                case "H": 
-                    if (canvasVisible) {
-                        scoreCanvas.style.visibility = "hidden";
-                        gameCanvas.style.visibility = "hidden";
-                        canvasVisible = false;
-                    } else {
-                        scoreCanvas.style.visibility = "visible";
-                        gameCanvas.style.visibility = "visible";
-                        canvasVisible = true;
-                    }
 
-                    break;                    
-                case "D":
-                    if ((paddleX + paddleBreite) < gameCanvas.width) {
-                        paddleX += paddleMove;
-                        if (moveX == 0 && moveY == 0)
-                            ballX += paddleMove;
-                    }
-                    break;
-                case "A":
-                    if (paddleX >= 10) {
-                        paddleX -= paddleMove;
-                        if (moveX == 0 && moveY == 0)
-                            ballX -= paddleMove;
-                    }
-                    break;
-                case "N":
-                    if (ballDown == true) {
-						pause = false;
-                        startGame();
-                    }
-                    break;
-                case "F":
-                    moveX *= 2;
-                    moveY *= 2;
-                    paddleMove *= 2;
-                    break;
-                case "G":
-                    moveX /= 2;
-                    moveY /= 2;
-                    paddleMove /= 2;
-                    break;
-				case "P":
-                    if(pause == false && ballDown == false){
-                        gameCtx.font = "60px Arial";
-                        gameCtx.fillStyle = "white";
-                        gameCtx.fillText("Pause", 300, 300);
-                        pause = true;
-                        clearInterval(interval);
-                        SoundBackground.pause();
-                    }
-                    else if(pause ==  true && ballDown == false){
-                        pause = false;
-                        interval = setInterval(draw, 10);
-                        SoundBackground.play();
-                    }
-                    break;
-                default:
-                    if (key_code == 32 && start) {
-                        leerpress = true;
-                        moveX = 2.5;
-                        moveY = (-2.5);
-                        start = false;
-                    }
-
-
-                    if(key_code == 13 && inMainMenu){
+            if(inMainMenu) {
+                if(key_code == 13){
                         inMainMenu = false;
                         initGame();
+                }
+            } 
+            else {
+                switch (key_press){                   
+                    case "D":
+                        if ((paddleX + paddleBreite) < gameCanvas.width) {
+                            paddleX += paddleMove;
+                            if (moveX == 0 && moveY == 0)
+                                ballX += paddleMove;
+                        }
+                        break;
+                    case "A":
+                        if (paddleX >= 10) {
+                            paddleX -= paddleMove;
+                            if (moveX == 0 && moveY == 0)
+                                ballX -= paddleMove;
+                        }
+                        break;
+                    case "N":
+                        if (ballDown == true) {
+						    pause = false;
+                            startGame();
+                        }
+                        break;
+                    case "F":
+                        moveX *= 2;
+                        moveY *= 2;
+                        paddleMove *= 2;
+                        break;
+                    case "G":
+                        moveX /= 2;
+                        moveY /= 2;
+                        paddleMove /= 2;
+                        break;
+				    case "P":
+                        if(pause == false && ballDown == false){
+                            gameCtx.font = "60px Arial";
+                            gameCtx.fillStyle = "white";
+                            gameCtx.fillText("Pause", 300, 300);
+                            pause = true;
+                            clearInterval(interval);
+                            SoundBackground.pause();
+                        }
+                        else if(pause ==  true && ballDown == false){
+                            pause = false;
+                            interval = setInterval(draw, 10);
+                            SoundBackground.play();
+                        }
+                        break;
+                    default:
+                        if (key_code == 32 && start) {
+                            leerpress = true;
+                            moveX = 2.5;
+                            moveY = (-2.5);
+                            start = false;
+                        }
+                        break;
                     }
-                    break;
             }
         }
 
