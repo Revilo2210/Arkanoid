@@ -16,7 +16,7 @@
         var scoreCanvas;
         var scoreCtx;
 
-        var canvasVisible = true;
+
         //Paddle
         var paddleX = 300;
         var paddleY;
@@ -39,6 +39,9 @@
         //Booleans
         var ballDown = false;
         var leerpress = false;
+        var pause = false;
+        var canvasVisible = true;
+        var inMainMenu = true;
 
         //Gamevars
         var lives = 3;
@@ -94,6 +97,32 @@
             
             gameCanvas = document.getElementById("gameCanvas");
             gameCtx = gameCanvas.getContext("2d");
+
+            showMainMenu();
+        }
+
+        function showMainMenu() {
+            gameCanvas.style.background = "url('space.jpg')";
+            scoreCanvas.style.visibility = "hidden";
+
+            gameCtx.font = "50px Arial";
+            gameCtx.fillStyle = "white";
+            gameCtx.fillText("Main Menu", 250, 80);
+            gameCtx.stroke();
+        }
+
+        function placeScoreCanvas() {
+            scoreCanvas = document.getElementById("scoreCanvas");
+            scoreCtx = scoreCanvas.getContext("2d");
+
+            scoreCanvas.style.left = "820px";
+            scoreCanvas.style.position = "absolute";
+
+            scoreCanvas.style.border = "red 1px solid";
+        }
+
+        function startGame() {
+            scoreCanvas.style.visibility = "visible";
             gameCanvas.style.border = "red 1px solid";
             paddleY = gameCanvas.height - paddleHoehe - 10;
             ballX = paddleX + (paddleBreite / 2);
@@ -111,16 +140,6 @@
             interval = setInterval(draw, 1);
 
             mouseX = document.all ? event.offsetX : event.pageX;
-        }
-
-        function placeScoreCanvas() {
-            scoreCanvas = document.getElementById("scoreCanvas");
-            scoreCtx = scoreCanvas.getContext("2d");
-
-            scoreCanvas.style.left = "820px";
-            scoreCanvas.style.position = "absolute";
-
-            scoreCanvas.style.border = "red 1px solid";
         }
 
 //Write
@@ -161,11 +180,13 @@
 
 //Draw
         function draw() {
-            gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-            drawBricks();
-            drawPaddle();
-            moveBall();
-            drawScore();
+			if(pause == false) {
+            	gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+            	drawBricks();
+            	drawPaddle();
+            	moveBall();
+            	drawScore();
+			}
         }
 
         function drawScore() {
@@ -361,6 +382,7 @@
                     break;
                 case "N":
                     if (ballDown == true) {
+						pause = false;
                         init();
                     }
                     break;
@@ -374,12 +396,29 @@
                     moveY /= 2;
                     paddleMove /= 2;
                     break;
+				case "P":
+                    if(pause == false && ballDown == false){
+                        gameCtx.font = "60px Arial";
+                        gameCtx.fillStyle = "black";
+                        gameCtx.fillText("Pause", 300, 300);
+                        pause = true;
+                    }
+                    else{
+                        pause = false;
+                    }
+                    break;
                 default:
                     if (key_code == 32 && start) {
                         leerpress = true;
                         moveX = 2.5;
                         moveY = (-2.5);
                         start = false;
+                    }
+
+
+                    if(key_code == 13 && inMainMenu){
+                        inMainMenu = false;
+                        startGame();
                     }
                     break;
             }
