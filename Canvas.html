@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Move Paddle</title>
+    <meta charset="utf-8" />
+
+    <link rel="stylesheet" type="text/css" href="Style.css">
+
+    <script>
+//Variablen
+        //Feld
+        var gameCanvas;
+        var gameCtx;
+
+        var scoreCanvas;
+        var scoreCtx;
+
+        var canvasVisible = true;
+        //Paddle
+        var paddleX = 300;
+        var paddleY;
+        var paddleBreite = 100;
+        var paddleHoehe = 20;
+        var paddleMove = 20;
+
+        //Ball
+        var ballX;
+        var ballY;
+        var radius = 10;
+
+        //Bewegung
+        var moveX;
+        var moveY;
+        var start = true;
+
+        var ballColor = "red";
+
+        //Booleans
+        var ballDown = false;
+        var leerpress = false;
+
+        //Gamevars
+        var lives = 3;
+        var level = 1;
+
+        var score = 0;
+
+        var mouseX;
+        var interval;
+        var bricks = [];
+        var brickHeight = 20;
+        var brickWidth = 695 / 12;
+        var brickDist = 5;
+        var brickStartX = 50;
+        var BrickStartY = 50;
+
+//Klassen
+        //Brick-class Frage: Warum die globalen Variablen für Höhe und Weite übergeben?
+        class Brick {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.hitsToGo = 1;
+                this.powerUp = 0;
+                this.color = "red";
+            }
+        }
+
+        class FastBrick {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.hitsToGo = 3;
+                this.powerUp = 1;
+                this.color="green";
+            }
+        }
+
+        class HardBrick {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.hitsToGo = 5;
+                this.powerUp = 2;
+                this.color = "blue";
+            }
+        }
+
+//Funktionen
+        //Initieren
+        function init() {
+            placeScoreCanvas();
+            
+            gameCanvas = document.getElementById("gameCanvas");
+            gameCtx = gameCanvas.getContext("2d");
+            gameCanvas.style.border = "red 1px solid";
+            paddleY = gameCanvas.height - paddleHoehe - 10;
+            ballX = paddleX + (paddleBreite / 2);
+            ballY = paddleY - (radius+1);
+            moveX = 0;
+            moveY = 0;
+
+            ballDown = false;
+            start = true;
+            leerpress = false;
+
+            setBricks();
+            
+
+            interval = setInterval(draw, 1);
+
+            mouseX = document.all ? event.offsetX : event.pageX;
+        }
+
+        function placeScoreCanvas() {
+            scoreCanvas = document.getElementById("scoreCanvas");
+            scoreCtx = scoreCanvas.getContext("2d");
+
+            scoreCanvas.style.left = "820px";
+            scoreCanvas.style.position = "absolute";
+
+            scoreCanvas.style.border = "red 1px solid";
+        }
+
+//Write
+        //"Finish-Screen"
+        function WriteFinish() {
+            clearInterval(interval);
+            gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+            drawPaddle();
+            if(lives == 0){
+                gameCtx.font = "30px Arial";
+                var gradient = gameCtx.createLinearGradient(0, 0, gameCanvas.width, 0)
+                gradient.addColorStop("0", "green");
+                gradient.addColorStop("0.25", "magenta");
+                gradient.addColorStop("0.5", "blue");
+                gradient.addColorStop("0.75", "yellow");
+                gradient.addColorStop("1.0", "red");
+                gameCtx.fillStyle = gradient;
+                gameCtx.fillText("Looser!!!", 250, 50);
+                gameCtx.fillText("Press F5 to Reload", 250, 100);
+                gameCtx.fillText("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 0, 150);
+                gameCtx.stroke();
+            } else{
+                gameCtx.font = "30px Arial";
+                gameCtx.fillText("Ball Down", 250, 50);
+                gameCtx.fillText("Leben: " + lives, 250, 100);
+                gameCtx.fillText("N zum Neustarten", 250, 150);
+                gameCtx.stroke();
+            }
+        }
+
+        function WriteWin(){
+            clearInterval(interval);
+            gameCtx.font = "30px Arial";
+            gameCtx.fillText("Feddich!", 250, 50);
+            gameCtx.fillText("Press F5 to Reload", 250, 100);
+            gameCtx.stroke();
+        }
+
+//Draw
+        function draw() {
+            gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+            drawBricks();
+            drawPaddle();
+            moveBall();
+            drawScore();
+        }
+
+        function drawScore() {
+            scoreCtx.clearRect(0, 0, scoreCanvas.width, scoreCanvas.height);
+            
+            scoreCtx.font = "30px Arial";
+
+            //Score
+            scoreCtx.fillText("Score:", 10, 30);
+            scoreCtx.fillText(score, 10, 60);
+
+            //Lives
+            scoreCtx.fillText("Lives:", 10, 130);
+            scoreCtx.fillText(lives, 10, 160);
+
+            //Level
+            scoreCtx.fillText("Level:", 10, 230);
+            scoreCtx.fillText(level, 10, 260);
+
+            scoreCtx.stroke();
+        }
+
+        function setBricks(){
+            var posAnX = brickStartX;
+            var posAnY = BrickStartY;
+            switch(level){
+                case 1:
+                console.log("LEVEL 1");
+                   while((posAnY + brickHeight) < (gameCanvas.height / 2)){
+                       console.log("h " + posAnY);
+                       while(posAnX + brickWidth + brickStartX <= gameCanvas.width){
+                           switch(Math.floor(Math.random() * 6)){
+                               case 1: bricks.push(new FastBrick(posAnX, posAnY)); break;
+                               case 5: bricks.push(new HardBrick(posAnX, posAnY)); break;
+                               case 2: break;
+                               default: bricks.push(new Brick(posAnX, posAnY)); break;
+                           }
+                           posAnX += brickWidth + brickDist;
+                       }
+                       posAnX = brickStartX;
+                       posAnY += brickHeight + brickDist;
+                   }
+                   console.log(bricks);
+                   break;
+                default:
+                console.log("DEFAULT");
+                    while(posAnY + brickHeight < gameCanvas.height/2){
+                        while(posAnX + brickWidth + brickStartX <= gameCanvas.width){
+                            bricks.push(new Brick(posAnX, posAnY));
+                            posAnX += brickWidth + brickDist;
+                        }
+                        posAnY += brickHeight + brickDist;
+                    }
+                    break; 
+            }
+        }
+
+        function drawBricks() {
+            bricks.forEach(brick => {
+                gameCtx.fillStyle = brick.color;
+                gameCtx.fillRect(brick.x, brick.y, brickWidth, brickHeight);
+                gameCtx.stroke();
+            });
+        }
+
+        function drawBall() {
+            gameCtx.beginPath();
+            gameCtx.arc(ballX, ballY, radius, 0, 2*Math.PI);
+            gameCtx.fillStyle = ballColor;
+            gameCtx.fill();
+            gameCtx.stroke();
+        }
+
+        //Paddle zeichnen
+        function drawPaddle() {
+            gameCtx.fillStyle = "#000000"; //CSS draus machen
+            gameCtx.fillRect(paddleX, paddleY, paddleBreite, paddleHoehe);
+        }
+
+//Divers
+        function collisionDetect(){
+
+            if ((ballY + radius) >= paddleY){
+                if(ballX > paddleX && ballX < paddleX + paddleBreite){
+                    moveY *= (-1);
+                } else {
+                    if (ballY > gameCanvas.height) {
+                        ballDown = true;
+                        lives-=1;
+                        WriteFinish();
+                    }   
+                }
+            } else {
+                if (ballX + radius >= gameCanvas.width || ballX - radius <= 0)
+                    moveX *= (-1);
+                if (ballY <= 0 + radius)
+                    moveY *= (-1);
+
+                for(var i = 0; i<bricks.length; i++){
+                    if (ballX - radius < bricks[i].x + brickWidth &&
+                        ballX + radius > bricks[i].x &&
+                        ballY - radius < bricks[i].y + brickHeight &&
+                        ballY + radius > bricks[i].y) {
+
+                        if(ballX > bricks[i].x+brickWidth || ballX < bricks[i].x){
+                            moveX *= -1;
+                        }
+
+                        if(ballY < bricks[i].y + brickHeight || ballY > bricks[i].y){
+                            moveY *= -1;
+                        }
+
+                        bricks[i].hitsToGo -= 1;
+
+                        if(bricks[i].hitsToGo<=0){
+                            
+                            bricks.splice(i, 1);
+                            score += 10;
+                        }
+                        if(bricks.length==0){
+                            draw();
+                            WriteWin();
+                        }
+                        break;
+                    }
+                }
+            }  
+        }
+
+        //Paddle soll Maus folgen?
+        function show_position(event) {
+            mouseX = document.all ? event.offsetX : event.pageX;
+
+            if (mouseX <= 50) {
+                paddleX = 0;
+                if (leerpress == false) {
+                    ballX = paddleX + 50;
+                }
+            }
+            else if (mouseX >= 750) {
+                paddleX = 700;
+                if (leerpress == false) {
+                    ballX = paddleX + 50;
+                }
+            }
+            else {
+                if (leerpress == false) {
+                    ballX = mouseX;
+                }
+                paddleX = mouseX - 50;
+            }
+        }
+
+        //Ball bewegen
+        function moveBall() {
+            
+            collisionDetect();
+            ballX += moveX;
+            ballY += moveY;
+            drawBall();
+        }
+
+        //Verwaltet Tastendruck
+        function Tastenhandler(ev) {
+            var key_press = String.fromCharCode(ev.keyCode);
+            var key_code = ev.keyCode;
+            switch (key_press){
+                case "H": 
+                    if (canvasVisible) {
+                        scoreCanvas.style.visibility = "hidden";
+                        gameCanvas.style.visibility = "hidden";
+                        canvasVisible = false;
+                    } else {
+                        scoreCanvas.style.visibility = "visible";
+                        gameCanvas.style.visibility = "visible";
+                        canvasVisible = true;
+                    }
+
+                    break;                    
+                case "D":
+                    if ((paddleX + paddleBreite) < gameCanvas.width) {
+                        paddleX += paddleMove;
+                        if (moveX == 0 && moveY == 0)
+                            ballX += paddleMove;
+                    }
+                    break;
+                case "A":
+                    if (paddleX >= 10) {
+                        paddleX -= paddleMove;
+                        if (moveX == 0 && moveY == 0)
+                            ballX -= paddleMove;
+                    }
+                    break;
+                case "N":
+                    if (ballDown == true) {
+                        init();
+                    }
+                    break;
+                case "F":
+                    moveX *= 2;
+                    moveY *= 2;
+                    paddleMove *= 2;
+                    break;
+                case "G":
+                    moveX /= 2;
+                    moveY /= 2;
+                    paddleMove /= 2;
+                    break;
+                default:
+                    if (key_code == 32 && start) {
+                        leerpress = true;
+                        moveX = 2.5;
+                        moveY = (-2.5);
+                        start = false;
+                    }
+                    break;
+            }
+        }
+
+//Durchführung
+        document.addEventListener("DOMContentLoaded", init, false);
+        document.addEventListener("mousemove", show_position, false);
+        document.addEventListener("keydown", Tastenhandler, false);
+    </script>
+</head>
+
+<body>
+    <element onmousemove="gameCanvas">
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <canvas id="scoreCanvas" width="200" height="300"></canvas>
+</body>
+
+</html>
