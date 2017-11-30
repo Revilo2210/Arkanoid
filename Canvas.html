@@ -487,6 +487,31 @@
                         inMainMenu = false;
                         initGame();
                 }
+                if(key_press == "M"){
+                    if(mute == false){
+                        mute = true;
+                        SoundBackground.volume = 0;
+                        SoundBlockExplode.volume = 0;
+                        SoundBlockMetalHard.volume = 0;
+                        SoundBlock.volume = 0;     
+                        SoundBlockMetalSoft.volume = 0;               
+                        SoundBallDown.volume = 0;                 
+                        SoundEnde.volume = 0;
+                        SoundWinning.volume = 0;
+                    }
+                    else{
+                        mute = false;
+                        SoundBackground.volume = 0.4;
+                        SoundBlockExplode.volume = 1;
+                        SoundBlockMetalHard.volume = 1;
+                        SoundBlock.volume = 1;     
+                        SoundBlockMetalSoft.volume = 1;               
+                        SoundBallDown.volume = 1;                 
+                        SoundEnde.volume = 1;
+                        SoundWinning.volume = 1;
+                    }
+                }
+                    
             } 
             else {
                 switch (key_press){                   
