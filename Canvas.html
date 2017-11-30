@@ -12,7 +12,6 @@
         //Feld
         var gameCanvas;
         var gameCtx;
-
         var scoreCanvas;
         var scoreCtx;
 
@@ -20,23 +19,33 @@
         //Paddle
         var paddleX = 300;
         var paddleY;
-        var paddleBreite = 100;
-        var paddleHoehe = 20;
+        var paddleWidth = 100;
+        var paddleHeight = 20;
         var paddleMove = 20;
 
         //Ball
         var ballX;
         var ballY;
         var radius = 10;
+        var ballColor;
+
+        //Bricks
+        var bricks = [];
+        var brickHeight = 20;
+        var brickWidth = 695 / 12;
+        var brickDist = 5;
+        var brickStartX = 50;
+        var BrickStartY = 50;
 
         //Bewegung
         var moveX;
         var moveY;
-        var start = true;
-
-        var ballColor = "green";
+        var interval;
+        var intervalOverclocking = 40;
+        var mouseX;
 
         //Booleans
+        var start = true;
         var ballDown = false;
         var leerpress = false;
         var pause = false;
@@ -46,17 +55,7 @@
         //Gamevars
         var lives = 3;
         var level = 1;
-
         var score = 0;
-
-        var mouseX;
-        var interval;
-        var bricks = [];
-        var brickHeight = 20;
-        var brickWidth = 695 / 12;
-        var brickDist = 5;
-        var brickStartX = 50;
-        var BrickStartY = 50;
 
         //Sound
         var SoundBlockExplode = new Audio("sounds/explosion.wav"); // buffers automatically when created
@@ -69,7 +68,7 @@
 
 
 
-//Klassen
+//(Block-)Klassen
         class Brick {
             constructor(x, y) {
                 this.x = x;
@@ -104,7 +103,7 @@
         }
 
 //Funktionen
-        //Initieren
+    //Initieren
         function init() {
 
             SoundBackground.play();
@@ -118,6 +117,20 @@
             showMainMenu();
         }
 
+        function initGame() {
+            scoreCanvas.style.visibility = "visible";
+            gameCanvas.style.border = "red 1px solid";
+            
+            paddleY = gameCanvas.height - paddleHeight - 10;
+
+            setBricks();
+
+            startGame();
+        }
+
+
+
+    //Menus
         function showMainMenu() {
             gameCanvas.style.background = "url('space.jpg')";
             scoreCanvas.style.visibility = "hidden";
@@ -137,21 +150,10 @@
 
             scoreCanvas.style.border = "red 1px solid";
         }
-
-        function initGame() {
-            scoreCanvas.style.visibility = "visible";
-            gameCanvas.style.border = "red 1px solid";
-            
-            paddleY = gameCanvas.height - paddleHoehe - 10;
-
-            setBricks();
-
-            startGame();
-        }
         
         function startGame() {
 
-            ballX = paddleX + (paddleBreite / 2);
+            ballX = paddleX + (paddleWidth / 2);
             ballY = paddleY - (radius+1);
             moveX = 0;
             moveY = 0;
@@ -160,13 +162,13 @@
             start = true;
             leerpress = false;
 
-            interval = setInterval(draw, 1);
+            interval = setInterval(draw, intervalOverclocking);
 
             mouseX = document.all ? event.offsetX : event.pageX;
         }
 
-//Write
-        //"Finish-Screen"
+//Event-Screens
+    //"Fail-Screen"
         function WriteFinish() {
             clearInterval(interval);
             gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
@@ -196,7 +198,7 @@
                 gameCtx.stroke();
             }
         }
-
+    //Win-Screen
         function WriteWin(){
             clearInterval(interval);
             gameCtx.font = "30px Arial";
@@ -293,13 +295,13 @@
         //Paddle zeichnen
         function drawPaddle() {
             gameCtx.fillStyle = "#FFFF00"; //CSS draus machen
-            gameCtx.fillRect(paddleX, paddleY, paddleBreite, paddleHoehe);
+            gameCtx.fillRect(paddleX, paddleY, paddleWidth, paddleHeight);
         }
 
 //Divers
         function collisionDetect(){
 
-            if(!rectCollision(paddleX, paddleY, paddleBreite, paddleHoehe)){
+            if(!rectCollision(paddleX, paddleY, paddleWidth, paddleHeight)){
                 if (ballY > gameCanvas.height) {
                     ballDown = true;
                     lives-=1;
@@ -330,10 +332,10 @@
                     }
                 } 
             } else {
-                if(ballY + radius < paddleY + (paddleHoehe/2)){
+                if(ballY + radius < paddleY + (paddleHeight/2)){
                     ballY -= ballY + radius - paddleY - 0,5;
                 } else {
-                    ballY += (paddleHoehe/2) + 0,5;
+                    ballY += (paddleHeight/2) + 0,5;
                     ballDown = true;
                     lives-=1;
                     WriteFinish();
@@ -393,7 +395,7 @@
             }
             return false;
         }
-
+    //Sounds
         function playBrickSound(hTG){
             switch(hTG){
                 case 1:
@@ -446,79 +448,61 @@
 
         //Verwaltet Tastendruck
         function Tastenhandler(ev) {
-            var key_press = String.fromCharCode(ev.keyCode);
             var key_code = ev.keyCode;
-            switch (key_press){
-                case "H": 
-                    if (canvasVisible) {
-                        scoreCanvas.style.visibility = "hidden";
-                        gameCanvas.style.visibility = "hidden";
-                        canvasVisible = false;
-                    } else {
-                        scoreCanvas.style.visibility = "visible";
-                        gameCanvas.style.visibility = "visible";
-                        canvasVisible = true;
-                    }
-
-                    break;                    
-                case "D":
-                    if ((paddleX + paddleBreite) < gameCanvas.width) {
+            switch (key_code){                
+                case 68: //D
+                case 39: //Right Arrow
+                    if ((paddleX + paddleWidth) < gameCanvas.width) {
                         paddleX += paddleMove;
                         if (moveX == 0 && moveY == 0)
                             ballX += paddleMove;
                     }
                     break;
-                case "A":
+                case 65: //A
+                case 37: //Left Arrow
                     if (paddleX >= 10) {
                         paddleX -= paddleMove;
                         if (moveX == 0 && moveY == 0)
                             ballX -= paddleMove;
                     }
                     break;
-                case "N":
-                    if (ballDown == true) {
+                case 78: //N
+                    if (ballDown == true && lives > 0) {
 						pause = false;
                         startGame();
                     }
                     break;
-                case "F":
+                case 70: //F
                     moveX *= 2;
                     moveY *= 2;
                     paddleMove *= 2;
                     break;
-                case "G":
+                case 71: //G
                     moveX /= 2;
                     moveY /= 2;
                     paddleMove /= 2;
                     break;
-				case "P":
-                    if(pause == false && ballDown == false){
+				case 80: //P
+                    if(pause == false && ballDown == false) {
                         gameCtx.font = "60px Arial";
                         gameCtx.fillStyle = "white";
                         gameCtx.fillText("Pause", 300, 300);
                         pause = true;
                         clearInterval(interval);
                         SoundBackground.pause();
-                    }
-                    else if(pause ==  true && ballDown == false){
-                        pause = false;
-                        interval = setInterval(draw, 10);
-                        SoundBackground.play();
+                    } else {
+                        if(pause ==  true && ballDown == false){
+                            pause = false;
+                            interval = setInterval(draw, intervalOverclocking);
+                            SoundBackground.play();
+                        }
                     }
                     break;
-                default:
-                    if (key_code == 32 && start) {
-                        leerpress = true;
-                        moveX = 2.5;
-                        moveY = (-2.5);
-                        start = false;
-                    }
-
-
-                    if(key_code == 13 && inMainMenu){
-                        inMainMenu = false;
-                        initGame();
-                    }
+                case 32: //Space
+                    leerpress = true;
+                    moveX = 2.5;
+                    moveY = (-2.5);
+                    start = false;
                     break;
             }
         }
