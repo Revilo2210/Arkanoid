@@ -274,7 +274,7 @@
             }
 
             gameCtx.fillStyle = "#FFFF00"; //CSS draus machen
-            gameCtx.fillRect(paddleX, paddleY, paddleBreite, paddleHoehe);
+            gameCtx.fillRect(paddleX, paddleY, paddleWidth, paddleHeight);
         }
 
     //draw Bricks from bricks-Array
@@ -505,13 +505,13 @@
                   SoundWinning.volume = vol;
               }
           
-        }
 //key-handler
         function keyHandler(ev) {
             var key_code = ev.keyCode;
             
             if(key_code == 13){
                     soundHandler();
+            }
           
             if(inMainMenu) {
                 if(key_code == 13){
