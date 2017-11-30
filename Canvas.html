@@ -42,6 +42,8 @@
         var pause = false;
         var canvasVisible = true;
         var inMainMenu = true;
+        var mute = false;
+        var bot = false;
 
         //Gamevars
         var lives = 3;
@@ -66,6 +68,7 @@
         var SoundBallDown = new Audio("sounds/Sad_Trombone.wav");
         var SoundEnde = new Audio("sounds/werner_blamage.wav");
         var SoundBackground = new Audio("sounds/Background.wav");
+        var SoundWinning = new Audio("sounds/Win.wav")
 
 
 
@@ -198,6 +201,8 @@
         }
 
         function WriteWin(){
+            SoundWinning.play();
+            SoundEnde.currentTime=0;
             clearInterval(interval);
             gameCtx.font = "30px Arial";
             gameCtx.fillText("Feddich!", 250, 50);
@@ -235,6 +240,13 @@
             //Level
             scoreCtx.fillText("Level:", 10, 230);
             scoreCtx.fillText(level, 10, 260);
+
+            //Mute
+            if(mute == true){
+                scoreCtx.fillText("Mute", 10, 290);
+                scoreCtx.fillText(Mute, 10, 260);
+            }
+            
 
             scoreCtx.stroke();
         }
@@ -292,6 +304,18 @@
 
         //Paddle zeichnen
         function drawPaddle() {
+
+            if (bot == true){
+                paddleX = ballX-50;
+
+                if (ballX <= 50) {
+                    paddleX = 0;
+                }
+                else if (ballX >= 750) {
+                    paddleX = 700;
+                }
+            }
+
             gameCtx.fillStyle = "#FFFF00"; //CSS draus machen
             gameCtx.fillRect(paddleX, paddleY, paddleBreite, paddleHoehe);
         }
@@ -416,10 +440,10 @@
             mouseX = document.all ? event.offsetX : event.pageX;
 
             if (mouseX <= 50) {
-                paddleX = 0;
-                if (leerpress == false) {
-                    ballX = paddleX + 50;
-                }
+            paddleX = 0;
+            if (leerpress == false) {
+                ballX = paddleX + 50;
+            }
             }
             else if (mouseX >= 750) {
                 paddleX = 700;
@@ -432,7 +456,7 @@
                     ballX = mouseX;
                 }
                 paddleX = mouseX - 50;
-            }
+            } 
         }
 
         //Ball bewegen
@@ -486,12 +510,47 @@
                     moveY *= 2;
                     paddleMove *= 2;
                     break;
+
+                case "M": //Mute
+                    if(mute == false){
+                        mute = true;
+                        SoundBackground.volume = 0;
+                        SoundBlockExplode.volume = 0;
+                        SoundBlockMetalHard.volume = 0;
+                        SoundBlock.volume = 0;     
+                        SoundBlockMetalSoft.volume = 0;               
+                        SoundBallDown.volume = 0;                 
+                        SoundEnde.volume = 0;
+                        SoundWinning.volume = 0;
+                    }
+                    else{
+                        mute = false;
+                        SoundBackground.volume = 0.4;
+                        SoundBlockExplode.volume = 1;
+                        SoundBlockMetalHard.volume = 1;
+                        SoundBlock.volume = 1;     
+                        SoundBlockMetalSoft.volume = 1;               
+                        SoundBallDown.volume = 1;                 
+                        SoundEnde.volume = 1;
+                        SoundWinning.volume = 1;
+                    }
+                    break;
                 case "G":
                     moveX /= 2;
                     moveY /= 2;
                     paddleMove /= 2;
                     break;
-				case "P":
+
+                case "B":
+                    if(bot == false){
+                        bot = true;
+                    }
+                    else{
+                        bot = false;
+                    }
+                    break;
+
+				case "P": // Pause
                     if(pause == false && ballDown == false){
                         gameCtx.font = "60px Arial";
                         gameCtx.fillStyle = "white";
