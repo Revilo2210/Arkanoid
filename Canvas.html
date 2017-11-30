@@ -206,7 +206,7 @@
 
         function WriteWin(){
             SoundWinning.play();
-            SoundEnde.currentTime=0;
+            SoundWinning.currentTime=0;
             clearInterval(interval);
             gameCtx.font = "30px Arial";
             gameCtx.fillStyle = "white";
@@ -249,7 +249,6 @@
             //Mute
             if(mute == true){
                 scoreCtx.fillText("Mute", 10, 290);
-                scoreCtx.fillText(Mute, 10, 260);
             }
             
 
@@ -343,6 +342,7 @@
                         for(var i = 0; i<bricks.length; i++) {
                             if (rectCollision(bricks[i].x, bricks[i].y, brickWidth, brickHeight)) {
                                 playBrickSound(bricks[i].hitsToGo);
+                                changeBrickColor(bricks[i]);
                                 bricks[i].hitsToGo -=1;
                                 if(bricks[i].hitsToGo<=0){
                                     
@@ -440,6 +440,18 @@
                 default:
                     SoundBlockMetalHard.play();
                     SoundBlockMetalHard.currentTime=0;
+                    break;
+            }
+            
+        }
+
+        function changeBrickColor(i){
+            switch(i.hitsToGo){
+                case 2:
+                    i.color = "red";
+                    break;
+                case 3: case 4:
+                    i.color = "green";
                     break;
             }
         }
