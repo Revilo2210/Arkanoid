@@ -51,6 +51,8 @@
         var pause = false;
         var canvasVisible = true;
         var inMainMenu = true;
+        var mute = false;
+        var bot = false;
 
         //Gamevars
         var lives = 3;
@@ -58,6 +60,7 @@
         var score = 0;
 
         //Sound
+        var vol = 1;
         var SoundBlockExplode = new Audio("sounds/explosion.wav"); // buffers automatically when created
         var SoundBlockMetalHard = new Audio("sounds/Metal_Hard.wav");
         var SoundBlock = new Audio("sounds/sf02.wav");
@@ -65,6 +68,7 @@
         var SoundBallDown = new Audio("sounds/Sad_Trombone.wav");
         var SoundEnde = new Audio("sounds/werner_blamage.wav");
         var SoundBackground = new Audio("sounds/Background.wav");
+        var SoundWinning = new Audio("sounds/Win.wav");
 
 //(Block-)Klassen
         class Brick {
@@ -203,8 +207,11 @@
         }
     //Win-Screen
         function WriteWin(){
+            SoundWinning.play();
+            SoundEnde.currentTime=0;
             clearInterval(interval);
             gameCtx.font = "30px Arial";
+            gameCtx.fillStyle = "white";
             gameCtx.fillText("Feddich!", 250, 50);
             gameCtx.fillText("Press F5 to Reload", 250, 100);
             gameCtx.stroke();
@@ -242,13 +249,32 @@
             scoreCtx.fillText("Level:", 10, 230);
             scoreCtx.fillText(level, 10, 260);
 
+            //Mute
+            if(mute == true){
+                scoreCtx.fillText("Mute", 10, 290);
+                scoreCtx.fillText(Mute, 10, 260);
+            }
+            
+
             scoreCtx.stroke();
         }
 
     //draw Paddle
         function drawPaddle() {
+
+            if (bot == true){
+                paddleX = ballX-50;
+
+                if (ballX <= 50) {
+                    paddleX = 0;
+                }
+                else if (ballX >= 750) {
+                    paddleX = 700;
+                }
+            }
+
             gameCtx.fillStyle = "#FFFF00"; //CSS draus machen
-            gameCtx.fillRect(paddleX, paddleY, paddleWidth, paddleHeight);
+            gameCtx.fillRect(paddleX, paddleY, paddleBreite, paddleHoehe);
         }
 
     //draw Bricks from bricks-Array
@@ -443,10 +469,10 @@
             mouseX = document.all ? event.offsetX : event.pageX;
 
             if (mouseX <= 50) {
-                paddleX = 0;
-                if (leerpress == false) {
-                    ballX = paddleX + 50;
-                }
+            paddleX = 0;
+            if (leerpress == false) {
+                ballX = paddleX + 50;
+            }
             }
             else if (mouseX >= 750) {
                 paddleX = 700;
@@ -459,13 +485,34 @@
                     ballX = mouseX;
                 }
                 paddleX = mouseX - 50;
-            }
+            } 
         }
 
-
+  
+        function soundHandler() {
+              if(vol>0){
+                vol=0;
+              } else{ 
+                vol = 1;
+              }
+                  SoundBackground.volume = vol == 0 ? 0: 0.4;
+                  SoundBlockExplode.volume = vol;
+                  SoundBlockMetalHard.volume = vol;
+                  SoundBlock.volume = vol;     
+                  SoundBlockMetalSoft.volume = vol;               
+                  SoundBallDown.volume = vol;                 
+                  SoundEnde.volume = vol;
+                  SoundWinning.volume = vol;
+              }
+          
+        }
 //key-handler
         function keyHandler(ev) {
             var key_code = ev.keyCode;
+            
+            if(key_code == 13){
+                    soundHandler();
+          
             if(inMainMenu) {
                 if(key_code == 13){
                         inMainMenu = false;
@@ -522,11 +569,13 @@
                         }
                         break;
                     case 32: //Space
+                      if (start) {
                         leerpress = true;
                         moveX = 2.5;
                         moveY = (-2.5);
                         start = false;
                         break;
+                    }
                 }
             }
         }
