@@ -34,7 +34,7 @@
         var moveY;
         var start = true;
 
-        var ballColor = "red";
+        var ballColor = "green";
 
         //Booleans
         var ballDown = false;
@@ -254,7 +254,7 @@
 
         function drawBall() {
             gameCtx.beginPath();
-            gameCtx.arc(ballX, ballY, radius, 0, 2*Math.PI);
+            gameCtx.arc(ballX, ballY, radius, 0, 2 * Math.PI);
             gameCtx.fillStyle = ballColor;
             gameCtx.fill();
             gameCtx.stroke();
@@ -262,7 +262,7 @@
 
         //Paddle zeichnen
         function drawPaddle() {
-            gameCtx.fillStyle = "#000000"; //CSS draus machen
+            gameCtx.fillStyle = "#FFFF00"; //CSS draus machen
             gameCtx.fillRect(paddleX, paddleY, paddleBreite, paddleHoehe);
         }
 
