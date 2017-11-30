@@ -115,10 +115,10 @@
             gameCtx = gameCanvas.getContext("2d");
 
             gradient = gameCtx.createLinearGradient(0, 0, gameCanvas.width, 0)
-            gradient.addColorStop("0", "green");
-            gradient.addColorStop("0.25", "magenta");
+            gradient.addColorStop("0", "yellow");
+            gradient.addColorStop("0.25", "green");
             gradient.addColorStop("0.5", "blue");
-            gradient.addColorStop("0.75", "yellow");
+            gradient.addColorStop("0.75", "magenta");
             gradient.addColorStop("1.0", "red");
 
             placeScoreCanvas();
@@ -289,7 +289,7 @@
         function drawBall() {
             gameCtx.beginPath();
             gameCtx.arc(ballX, ballY, radius, 0, 2 * Math.PI);
-            gameCtx.fillStyle = gradient[ballX];
+            gameCtx.fillStyle = gradient;
             gameCtx.fill();
             gameCtx.stroke();
         }
