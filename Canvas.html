@@ -14,7 +14,13 @@
         var gameCtx;
         var scoreCanvas;
         var scoreCtx;
+        var scoreBoard;
 
+        var labelScore;
+        var labelLifes;
+        var labelLevel;
+        var labelSpeed;
+        var labelSound;
 
         //Paddle
         var paddleX = 300;
@@ -49,7 +55,7 @@
         var moveX;
         var moveY;
         var interval;
-        var intervalOverclocking = 5;
+        var intervalOverclocking = 20;
         var mouseX;
 
         //Booleans
@@ -63,7 +69,7 @@
         var bot = false;
 
         //Gamevars
-        var lives = 3;
+        var lifes = 3;
         var level = 1;
         var score = 0;
 
@@ -83,9 +89,10 @@
             constructor(x, y) {
                 this.x = x;
                 this.y = y;
-                this.hitsToGo = 1;
+                this.initialHits = 1;
+                this.hitsToGo = this.initialHits;
                 this.powerUp = 0;
-                this.color = "red";
+                this.color = "rgb(255, 0, 0)";
                 this.value = 5;
             }
         }
@@ -94,9 +101,10 @@
             constructor(x, y) {
                 this.x = x;
                 this.y = y;
-                this.hitsToGo = 3;
+                this.initialHits = 3;
+                this.hitsToGo = this.initialHits;
                 this.powerUp = Math.floor(Math.random() * 2) + 1; // 1 or 2
-                this.color="green";
+                this.color= "rgb(0, 255, 0)";
                 this.value = 20;
             }
         }
@@ -105,9 +113,10 @@
             constructor(x, y) {
                 this.x = x;
                 this.y = y;
-                this.hitsToGo = 5;
+                this.initialHits = 5;
+                this.hitsToGo = this.initialHits;
                 this.powerUp = Math.floor(Math.random() * 2) + 3; //3 or 4
-                this.color = "blue";
+                this.color = "rgb(0, 0, 255)";
                 this.value = 50;
             }
         }
@@ -117,7 +126,7 @@
                 this.x = x;
                 this.y = y;
                 this.type = type;
-                this.color = pickColor(type);
+                this.color = pickColorPwUp(type);
             }
         }
 
@@ -139,7 +148,8 @@
         }
 
         function initGame() {
-            scoreCanvas.style.visibility = "visible";
+            //scoreCanvas.style.visibility = "visible";
+            scoreBoard.style.visibility = "visible";
             gameCanvas.style.border = "red 1px solid";
             
             paddleY = gameCanvas.height - paddleHeight - 10;
@@ -163,7 +173,8 @@
     //Main-Menu
         function showMainMenu() {
             gameCanvas.style.background = "url('space.jpg')";
-            scoreCanvas.style.visibility = "hidden";
+            //scoreCanvas.style.visibility = "hidden";
+            scoreBoard.style.visibility = "hidden";
 
             gameCtx.font = "50px Arial";
             gameCtx.fillStyle = "white";
@@ -173,12 +184,25 @@
         }
     //Score-Menu
         function placeScoreCanvas() {
-            scoreCanvas = document.getElementById("scoreCanvas");
-            scoreCtx = scoreCanvas.getContext("2d");
+            //scoreCanvas = document.getElementById("scoreCanvas");
+            //scoreCtx = scoreCanvas.getContext("2d");
+            scoreBoard = document.getElementById("scoreBoard");
 
-            scoreCanvas.style.left = `${gameCanvas.width + 20}px`;
+            labelScore = document.getElementById("score");
+            labelLifes = document.getElementById("lifes");
+            labelLevel = document.getElementById("level");
+            labelSpeed = document.getElementById("speed");
+            labelSound = document.getElementById("sound");
+
+            labelScore.innerHTML = score;
+            labelLifes.innerHTML = lifes;
+            labelLevel.innerHTML = level;
+            labelSpeed.innerHTML = 0; //tbd
+            labelSound.innerHTML = "On";
+
+            /*scoreCanvas.style.left = `${gameCanvas.width + 20}px`;
             scoreCanvas.style.position = "absolute";
-            scoreCanvas.style.border = "red 1px solid";
+            scoreCanvas.style.border = "red 1px solid";*/
         }
         
         function startGame() {
@@ -203,7 +227,7 @@
             clearInterval(interval);
             gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
             drawPaddle();
-            if(lives == 0){
+            if(lifes == 0){
                 gameCtx.font = "30px Arial";
                 gameCtx.fillStyle = ballColorGradient;
                 SoundEnde.play();
@@ -217,7 +241,7 @@
                 SoundBallDown.currentTime=0;
                 gameCtx.font = "30px Arial";
                 gameCtx.fillText("Ball Down", 250, 50);
-                gameCtx.fillText("Leben: " + lives, 250, 100);
+                gameCtx.fillText("Leben: " + lifes, 250, 100);
                 gameCtx.fillText("N zum Neustarten", 250, 150);
                 gameCtx.stroke();
             }
@@ -243,7 +267,7 @@
             drawPowerUps();
             drawPaddle();
             moveBall();
-            drawScore();
+            //drawScore();
 			
             if(SoundBackground.currentTime >= 74){
                 SoundBackground.currentTime=0;
@@ -261,7 +285,7 @@
 
             //Lives
             scoreCtx.fillText("Lifes:", 10, 130);
-            scoreCtx.fillText(lives, 10, 160);
+            scoreCtx.fillText(lifes, 10, 160);
 
             //Level
             scoreCtx.fillText("Level:", 10, 230);
@@ -287,13 +311,13 @@
         function drawPaddle() {
 
             if (bot == true){
-                paddleX = ballX-50;
+                paddleX = ballX - paddleWidth/2;
 
-                if (ballX <= 50) {
+                if (paddleX < 0) {
                     paddleX = 0;
                 }
-                else if (ballX >= 750) {
-                    paddleX = 700;
+                else if (paddleX + paddleWidth > gameCanvas.width) {
+                    paddleX = gameCanvas.width - paddleWidth;
                 }
             }
 
@@ -344,14 +368,25 @@
 
     //change Brick-Color, depending on hits left 
         function changeBrickColor(brickTC){
-            switch(brickTC.hitsToGo){
+            /*switch(brickTC.hitsToGo){
                 case 2:
                     brickTC.color = "red";
                     break;
                 case 3: case 4:
                     brickTC.color = "green";
                     break; 
+            }*/
+            var transparency = brickTC.hitsToGo/brickTC.initialHits;
+            console.log(transparency);
+            switch(brickTC.initialHits){
+                case 3:
+                    brickTC.color = `rgba(0, 255, 0, ${transparency})`;
+                    break;
+                case 5:
+                    brickTC.color = `rgba(0, 0, 255, ${transparency})`;
+                    break; 
             }
+            console.log(brickTC.color);
         }
 
     //draw PowerUps
@@ -366,7 +401,7 @@
             }
         }
 
-        function pickColor(type) {
+        function pickColorPwUp(type) {
             switch(type) {
                 case 1: return "PaleGreen";
                 case 2: return "Chartreuse";
@@ -413,7 +448,7 @@
             if(!rectCollision(paddleX, paddleY, paddleWidth, paddleHeight)){
                 if (ballY > gameCanvas.height) {
                     ballDown = true;
-                    lives-=1;
+                    lifes-=1;
                     WriteFinish();
                 } else {
                     if (ballY < (gameCanvas.height / 2) + brickHeight) {
@@ -437,8 +472,8 @@
             for(var i = 0; i<bricks.length; i++) {
                 if (rectCollision(bricks[i].x, bricks[i].y, brickWidth, brickHeight)) {
                     playBrickSound(bricks[i].hitsToGo);
-                    changeBrickColor(bricks[i]);
                     bricks[i].hitsToGo -=1;
+                    changeBrickColor(bricks[i]);
                     if(bricks[i].hitsToGo<=0){
                         score += bricks[i].value;
                         spawnPwUp(bricks[i].x + plusX, bricks[i].y + plusY, bricks[i].powerUp);
@@ -461,7 +496,7 @@
             } else {
                 ballY += (paddleHeight/2) + 0,5;
                 ballDown = true;
-                lives-=1;
+                lifes-=1;
                 WriteFinish();
             }
         }
@@ -559,60 +594,72 @@
         function show_position(event) {
             mouseX = document.all ? event.offsetX : event.pageX;
 
-            if (mouseX <= 50) {
+            if (mouseX <= paddleWidth/2) {
             paddleX = 0;
             if (leerpress == false) {
-                ballX = paddleX + 50;
+                ballX = paddleX + paddleWidth/2;
             }
             }
-            else if (mouseX >= 750) {
-                paddleX = 700;
+            else if (mouseX >= gameCanvas.width-paddleWidth/2) {
+                paddleX = gameCanvas.width-paddleWidth;
                 if (leerpress == false) {
-                    ballX = paddleX + 50;
+                    ballX = paddleX + paddleWidth/2;
                 }
             }
             else {
                 if (leerpress == false) {
                     ballX = mouseX;
                 }
-                paddleX = mouseX - 50;
+                paddleX = mouseX - paddleWidth/2;
             } 
         }
 
         //paddle weite u position checken
         function activatePwUp(type){
-            var change = 0;
+            var change = 2;
             switch(type){
-                case 0: lives++; break;
-                case 1: 
-                    moveX *= 2;
-                    setTimeout(function(){moveX /= 2;}, powerUpTimer);
+                case 0: lifes++; break;
+                case 1:
+                    if(intervalOverclocking >= 5) {
+                        intervalOverclocking /= change;
+                        setTimeout(function(){intervalOverclocking *= change;}, powerUpTimer);
+                    }
                     break;
-                case 2: 
-                    moveX /= 2;
-                    setTimeout(function(){moveX *= 2;}, powerUpTimer);
+                case 2:
+                    if(intervalOverclocking < 40) {
+                        intervalOverclocking *= change;
+                        setTimeout(function(){intervalOverclocking /= change;}, powerUpTimer);
+                    }
                     break;
                 case 3:
-                    if(paddleWidth<=100){
-                        paddleWidth += 50; 
-                        if(paddleX > 25){ paddleX -= 25 };
-                        setTimeout(function(){paddleWidth -= 30; paddleX += 15;}, powerUpTimer);
-                    } break;
+                    if(paddleWidth <= 100) {
+                        paddleWidth *= change;
+                        paddleX -= (paddleWidth / (2*change)); 
+                        if(paddleX < 0){ paddleX = 0 } 
+                        else { if(paddleX + paddleWidth > gameCanvas.width){paddleX = gameCanvas.width - paddle.width} }
+                        setTimeout(function(){paddleWidth /= change; paddleX += (paddleWidth / (2*change))}, powerUpTimer);
+                    } 
+                    break;
                 case 4:
-                    if(paddleWidth >= 100){
-                        paddleWidth -= 50; 
-                        if(paddleX + paddleWidth < gameCanvas.width - 25){ paddleX += 25 };
-                        setTimeout(function(){paddleWidth += 30; paddleX -= 15;}, powerUpTimer);
-                    }break;
+                    if(paddleWidth >= 100) {
+                        paddleWidth /= change; 
+                        paddleX += (paddleWidth / (2*change)); 
+                        if(paddleX < 0){ paddleX = 0 } 
+                        else { if(paddleX + paddleWidth > gameCanvas.width){paddleX = gameCanvas.width - paddle.width} }
+                        setTimeout(function(){paddleWidth *= change; paddleX -= (paddleWidth / (2*change));}, powerUpTimer);
+                    }
+                    break;
                 default: break;
             }
         }
   
         function soundHandler() {
             if(vol>0){
-            vol=0;
+                vol=0;
+                labelSound.innerHTML = "Off";
             } else{ 
-            vol = 1;
+                vol = 1;
+                labelSound.innerHTML = "On";
             }
             SoundBackground.volume = vol == 0 ? 0: 0.4;
             SoundBlockExplode.volume = vol;
@@ -656,20 +703,10 @@
                         }
                         break;
                     case 78: //N
-                        if (ballDown == true && lives > 0) {
+                        if (ballDown == true && lifes > 0) {
                             pause = false;
                             startGame();
                         }
-                        break;
-                    case 70: //F
-                        moveX *= 2;
-                        moveY *= 2;
-                        paddleMove *= 2;
-                        break;
-                    case 71: //G
-                        moveX /= 2;
-                        moveY /= 2;
-                        paddleMove /= 2;
                         break;
                     case 80: //P
                         if(pause == false && ballDown == false) {
@@ -693,9 +730,14 @@
                             moveX = 2.5;
                             moveY = (-2.5);
                             start = false;
+                        } else {
+                            if (ballDown == true && lifes > 0) {
+                                pause = false;
+                                startGame();
+                            }
                         }
                         break;
-                    case 66:
+                    case 66: //B
                       bot = !bot;
                       break;
                 }
@@ -711,8 +753,56 @@
 
 <body>
     <element onmousemove="gameCanvas">
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
-    <canvas id="scoreCanvas" width="200" height="500"></canvas>
+    
+    <!--canvas id="scoreCanvas" width="200" height="500"-->
+    
+        
+    </canvas>
+    <table>
+            <tr>
+                <td>
+                    <canvas id="gameCanvas" width="800" height="600"></canvas>
+                </td>
+                <td id="scoreBoard">
+                    <table>
+                        <tr>
+                            <th>
+                            
+                                Score:
+                                <script>var text = 3;</script>
+                            </th>
+                            <th id="score"/>
+                        </tr>
+                        <tr>
+                            <td>
+                                Lifes:
+                            </td>
+                            <td id="lifes"/>
+                        </tr>
+                        <tr>
+                            <td>
+                                Lifes:
+                            </td>
+                            <td id="level"/>
+                        </tr>
+                        <tr>
+                            <td>
+                                Speed:
+                            </td>
+                            <td id="speed"/>
+                        </tr>
+                        <tr>
+                            <td>
+                                Sound:
+                            </td>
+                            <td id="sound"/>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                </td>
+            </tr>
+        </table>
 </body>
 
 </html>
