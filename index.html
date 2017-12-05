@@ -805,7 +805,7 @@
                     default:
                         return;
                 }
-
+                adjustLevel(level);
                 inMainMenu = false;
                 initGame();
 
@@ -853,6 +853,7 @@
                                     resetScore();
                                     if (level < 4) {
                                         level++;
+                                        adjustLevel(level);
                                     }
                                     initGame();
                                 }
