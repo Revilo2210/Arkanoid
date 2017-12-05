@@ -2,12 +2,6 @@ body {
     background-color: palevioletred;
 }
 
-#test {
-    left: 820px;
-    top: 5px;
-    position: absolute;
-}
-
 headline {
     font-weight: bold;
     text-decoration: underline;
@@ -20,7 +14,16 @@ headline2 {
     font-size: 20px;
 }
 
-htest {
+headline3 {
     font-weight: bold;
     text-decoration: underline;
+}
+
+#info {
+    left: 820px;
+    top: 5px;
+    position: absolute;
+}
+#scoreBoard {
+    padding-bottom: 50px;
 }
