@@ -16,11 +16,11 @@ Ein Uni Projekt mit dem Ziel das bekannte Retro Spiel "Arkanoid" mit JavaScript 
 - ***D*** oder ***rechte Pfeiltaste***: Bewegt das Pannel nach rechts
 - ***A*** oder ***linke Pfeiltaste***: Bewegt das Pannel nach links
 - Steuerung des Pannels ist auch mit der ***Maus*** möglich. (Pannel = X-Position der Maus)
-- ***N***: Weiterspielen, nachdem der Ball nicht mit dem Paddel getroffen wurde
 - ***P***: Spiel pausieren
-- ***Leertaste***: Spiel beginnen -> Ball vom Pannel lösen
+- ***Leertaste***: Spiel beginnen -> Ball vom Pannel lösen / Weiterspielen, nachdem der Ball nicht mit dem Paddel getroffen wurde
 - ***B***: Bot starten (Für Testzwecke gedacht)
-- ***Enter***: Aus dem Menü ins Spiel wechseln
+- ***1 - 4***: Mit der jeweiligen Taste das entsprechende Level starten
+- ***M***: Schaltet den sound an/aus
 
 
 ## Wer war für was zuständig?
@@ -30,14 +30,19 @@ Ein Uni Projekt mit dem Ziel das bekannte Retro Spiel "Arkanoid" mit JavaScript 
 - Power Ups (Ballgeschwindigkeit erhöhen/verringern, Paddle vergrößern/verkleinern, Leben hinzufügen)
 - Blöcke und deren Management
 - Leveldesign
-- Scoreboard
+- Scoreboard (Logik)
 - Tastenhandler
+- Refactoring
+- Transparenz der Blöcke
 
 ### Oliver Rehbach:
 - Menü
 - Farbänderung des Balls
 - Levelauswahl
 - Design
+- Scoreboard (Design)
+- Tastenhandler
+- Refactoring
 
 ### Janic Steckelbach:
 - Musik und Soundeffekte
