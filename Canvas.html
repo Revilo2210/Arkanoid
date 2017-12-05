@@ -799,9 +799,11 @@
                     case 100: //Numpad 4
                         level = 4;
                         break;
-                    default:
+                    case 84: //T
                         level = 0
-                        break; // Anpassen
+                        break;
+                    default:
+                        return;
                 }
 
                 inMainMenu = false;
