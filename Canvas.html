@@ -176,6 +176,9 @@
 //Menus
     //Main-Menu
         function showMainMenu() {
+            var imageX = (gameCanvas.width / 2) - 230;
+            var imageY = (gameCanvas.height / 2) - 50;
+            
             var background = new Image();
             background.src = "backgrounds/menu_background.jpeg";
             background.onload = function() {
@@ -187,55 +190,68 @@
 
                 gameCtx.font = "100px Arial";
                 gameCtx.fillStyle = "white";
-                gameCtx.fillText("Arkanoid", 200, 100);
+                gameCtx.textAlign="center"; 
+                gameCtx.fillText("Arkanoid", (gameCanvas.width / 2), 100);
 
                 gameCtx.font = "40px Arial";
-                gameCtx.fillText("Press Number to start Level", 20, height - 20);
+                gameCtx.fillText("Press Number to start Level", (gameCanvas.width / 2), imageY - 20);
             };
-
-            var height = (gameCanvas.height / 2) - 50;
 
             var img1 = new Image();
             img1.src = "backgrounds/space_level1.jpg";
             img1.onload = function() {
+                console.log("image 1 geladen");
+                
                 gameCtx.font = "40px Arial";
-                gameCtx.drawImage(img1, 20, height, 100, 100);
-                gameCtx.fillText("1", 55, height + 65);
+                gameCtx.drawImage(img1, imageX, imageY, 100, 100);
+                gameCtx.fillText("1", imageX + 50, imageY + 65);
 
                 gameCtx.stroke();
+                
+                imageX += 120;
             };
 
             var img2 = new Image();
             img2.src = "backgrounds/space_level2.jpg";
-            img2.onload = function() {
+            img2.onload = setTimeout(() => {
+                console.log("image 2 geladen");
+                
                 gameCtx.font = "40px Arial";
-                gameCtx.drawImage(img2, 140, height, 100, 100);
-                gameCtx.fillText("2", 175, height + 65);
+                gameCtx.drawImage(img2, imageX, imageY, 100, 100);
+                gameCtx.fillText("2", imageX + 50, imageY + 65);
 
                 gameCtx.stroke();
-            };
+
+                imageX += 120;                
+            }, 50);
 
             var img3 = new Image();
             img3.src = "backgrounds/space_level3.jpg";
-            img3.onload = function() {
+            img3.onload = setTimeout(() => {
+                console.log("image 3 geladen");
+                
                 gameCtx.font = "40px Arial";
-                gameCtx.drawImage(img3, 260, height, 100, 100);
-                gameCtx.fillText("3", 295, height + 65);
+                gameCtx.drawImage(img3, imageX, imageY, 100, 100);
+                gameCtx.fillText("3", imageX + 50, imageY + 65);
 
                 gameCtx.stroke();
-            };
-            
+
+                imageX += 120;                
+            }, 100);
+
             var img4 = new Image();
             img4.src = "backgrounds/space_level4.gif";
-            img4.onload = function() {
+            img4.onload = setTimeout(() => {
+                console.log("image 4 geladen");
+                
                 gameCtx.font = "40px Arial";
-                gameCtx.drawImage(img4, 380, height, 100, 100);                                
-                gameCtx.fillText("4", 415, height + 65);
+                gameCtx.drawImage(img4, imageX, imageY, 100, 100);                                
+                gameCtx.fillText("4", imageX + 50, imageY + 65);
 
                 gameCtx.stroke();
-            };
 
-
+                imageX += 120;
+            }, 150);
 
             gameCtx.stroke();
         }
