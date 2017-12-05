@@ -50,8 +50,8 @@
         var powerUpTimer = 10000;
 
         //Bewegung
-        var moveX;
-        var moveY;
+        var moveX = 0;
+        var moveY = 0;
         var interval;
         var intervalOverclocking = 10;
         var mouseX;
@@ -383,6 +383,7 @@
                     gameCanvas.style.background = "url('backgrounds/space_level4.gif')";
                     break;
                 default:
+                    setBricks(testlvl);
                     return;
                    
             }
@@ -804,7 +805,8 @@
                     level = 4;
                     break;
                     default:
-                    return; // Anpassen
+                    level = 0
+                    break; // Anpassen
                 }
                     
                 inMainMenu = false;
@@ -844,9 +846,15 @@
                             adjustSpeed();
                             start = false;
                         } else {
-                            if (ballDown == true && lifes > 0 && win == false) {
-                                pause = false;
-                                startGame();
+                            if (ballDown == true && lifes > 0) {
+                                if(win == false){
+                                    pause = false;
+                                    startGame();
+                                } else {
+                                    win = false;
+                                    resetScore();
+                                    initGame();
+                                }
                             }
                         }
                         break;

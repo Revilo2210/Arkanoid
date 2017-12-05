@@ -8,6 +8,8 @@
             - else = Normal (5% chance to gain an extra-life, 1 Hit)
 */
 
+testlvl = [[3]];
+
 levelEins=[
     [1,1,1,2,2,0,2,2,1,1,1], 
     [1,2,1,2,3,3,3,2,1,2,1], 
