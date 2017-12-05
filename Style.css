@@ -1,3 +1,26 @@
 body {
     background-color: palevioletred;
 }
+
+#test {
+    left: 820px;
+    top: 5px;
+    position: absolute;
+}
+
+headline {
+    font-weight: bold;
+    text-decoration: underline;
+    font-size: 25px;
+}
+
+headline2 {
+    font-weight: bold;
+    text-decoration: underline;
+    font-size: 20px;
+}
+
+htest {
+    font-weight: bold;
+    text-decoration: underline;
+}
