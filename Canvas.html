@@ -6,14 +6,12 @@
     <meta charset="utf-8" />
 
     <link rel="stylesheet" type="text/css" href="Style.css">
-
+    <script type="text/javascript" src="levels.json"></script>
     <script>
 //Variablen
         //Feld
         var gameCanvas;
         var gameCtx;
-        var scoreCanvas;
-        var scoreCtx;
         var scoreBoard;
 
         var labelScore;
@@ -41,7 +39,7 @@
         var brickWidth = 695 / 12;
         var brickDist = 5;
         var brickStartX = 50;
-        var BrickStartY = 50;
+        var brickStartY = 50;
 
         var radiusPwUp = 5;
         var plusX = brickWidth/2;
@@ -156,9 +154,9 @@
             gameCanvas.style.border = "red 1px solid";
             
             paddleY = gameCanvas.height - paddleHeight - 5;
-            paddleX = gameCanvas.width - paddleWidth/2;
+            paddleX = gameCanvas.width/2 - paddleWidth/2;
 
-            setBricks();
+            setLevel();
 
             startGame();
         }
@@ -350,39 +348,6 @@
             }
         }
 
-    //draw Score
-        function drawScore() { //Muss nur neu wenn es sich ändert
-            scoreCtx.clearRect(0, 0, scoreCanvas.width, scoreCanvas.height);
-            scoreCtx.font = "30px Arial";
-
-            //Score
-            scoreCtx.fillText("Score:", 10, 30);
-            scoreCtx.fillText(score, 10, 60);
-
-            //Lives
-            scoreCtx.fillText("Lifes:", 10, 130);
-            scoreCtx.fillText(lifes, 10, 160);
-
-            //Level
-            scoreCtx.fillText("Level:", 10, 230);
-            scoreCtx.fillText(level, 10, 260);
-
-            //Speed
-            var speed = Math.floor(Math.sqrt(moveX*moveX + moveY*moveY)*10)/10;
-            scoreCtx.fillText("Speed:", 10, 330);
-            scoreCtx.fillText(`${speed}px per ${intervalOverclocking}ms?`, 10, 360);
-
-            //Mute
-            scoreCtx.fillText("Sound:", 10, 430);
-            if(mute == true){
-                scoreCtx.fillText("off", 10, 460);
-            } else {
-                scoreCtx.fillText("on", 10, 460);
-            }
-
-            scoreCtx.stroke();
-        }
-
     //draw Paddle
         function drawPaddle() {
 
@@ -411,34 +376,66 @@
         }
 
     //support-method to initialize bricks-Array
-        function setBricks(){
-            var posAnX = brickStartX;
-            var posAnY = BrickStartY;
+        function setLevel(){
             switch(level){
                 case 1:
-                   while((posAnY + brickHeight) < (gameCanvas.height / 2)){
-                       while(posAnX + brickWidth + brickStartX <= gameCanvas.width){
-                           switch(Math.floor(Math.random() * 6)){
-                               case 1: bricks.push(new FastBrick(posAnX, posAnY)); break;
-                               case 5: bricks.push(new HardBrick(posAnX, posAnY)); break;
-                               case 2: break;
-                               default: bricks.push(new Brick(posAnX, posAnY)); break;
-                           }
-                           posAnX += brickWidth + brickDist;
-                       }
-                       posAnX = brickStartX;
-                       posAnY += brickHeight + brickDist;
-                   }
-                   break;
+                    setBricks(levelEins);
+                    gameCanvas.style.background = "url('backgrounds/space_level1.jpg')";
+                    break;
+                case 2:
+                    setBricks(levelZwei);
+                    gameCanvas.style.background = "url('backgrounds/space_level2.jpg')";
+                    break;
+                case 3:
+                    setBricks(levelDrei);
+                    gameCanvas.style.background = "url('backgrounds/space_level3.jpg')";
+                    break;
+                case 4: 
+                    setRandomBricks();
+                    gameCanvas.style.background = "url('backgrounds/space_level4.gif')";
+                    break;
                 default:
-                    while(posAnY + brickHeight < gameCanvas.height / 2){
-                        while(posAnX + brickWidth + brickStartX <= gameCanvas.width){
-                            bricks.push(new Brick(posAnX, posAnY));
+                    return;
+                   
+            }
+        }
+
+        function setBricks(brickArray){
+            var posAnX = brickStartX;
+            var posAnY = brickStartY;
+            brickArray.forEach(row => {
+                if((posAnY + brickHeight) < (gameCanvas.height / 2)){
+                    row.forEach(bt => {
+                        if(posAnX + brickWidth + brickStartX <= gameCanvas.width){
+                        addBrick(bt, posAnX, posAnY);
                             posAnX += brickWidth + brickDist;
                         }
-                        posAnY += brickHeight + brickDist;
-                    }
-                    break; 
+                    })
+                    posAnX = brickStartX;
+                    posAnY += brickHeight + brickDist;
+                }
+            })
+        }
+
+        function setRandomBricks(){
+            var posAnX = brickStartX;
+            var posAnY = brickStartY;
+            while((posAnY + brickHeight) < (gameCanvas.height / 2)){
+                while(posAnX + brickWidth + brickStartX <= gameCanvas.width){
+                    addBrick(Math.floor(Math.random() * 6), posAnX, posAnY);
+                    posAnX += brickWidth + brickDist;
+                }
+                posAnX = brickStartX;
+                posAnY += brickHeight + brickDist;
+            }
+        }
+
+        function addBrick(wantedType, posX, posY){
+            switch(wantedType){
+                case 0: break;
+                case 1: bricks.push(new FastBrick(posX, posY)); break;
+                case 2: bricks.push(new HardBrick(posX, posY)); break;
+                default: bricks.push(new Brick(posX, posY)); break;
             }
         }
 
@@ -567,7 +564,6 @@
                     changeBrickColor(bricks[i]);
                     if(bricks[i].hitsToGo<=0){
                         adjustScore(bricks[i].value);
-                        console.log(score + " " + bricks[i].value);
                         spawnPwUp(bricks[i].x + plusX, bricks[i].y + plusY, bricks[i].powerUp);
                         bricks.splice(i, 1);
                         if(bricks.length==0){
@@ -835,23 +831,6 @@
                     case 65: //A
                     case 37: //Left Arrow
                         linksklick = true;
-                        break;
-                    case 78: //N
-                        if (ballDown == true && lifes > 0 && win == false) {
-                            pause = false;
-                            startGame();
-
-                            switch (lifes){
-                                case 1:
-                                    gameCanvas.style.background = "url('backgrounds/space_level3.jpg')";
-                                    scoreCanvas.style.visibility = "hidden";
-                                break;
-                                case 2:
-                                    gameCanvas.style.background = "url('backgrounds/space_level2.jpg')";
-                                    scoreCanvas.style.visibility = "hidden";
-                                break;
-                            }
-                        }
                         break;
                     case 80: //P
                         if(pause == false && ballDown == false) {
