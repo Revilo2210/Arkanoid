@@ -67,6 +67,7 @@
         var inMainMenu = true;
         var mute = false;
         var bot = false;
+        var win = false;
 
         //Gamevars
         var lifes = 3;
@@ -92,7 +93,7 @@
                 this.initialHits = 1;
                 this.hitsToGo = this.initialHits;
                 this.powerUp = 0;
-                this.color = "rgb(255, 0, 0)";
+                this.color = "rgb(255, 0, 0)"; // rot
                 this.value = 5;
             }
         }
@@ -104,7 +105,7 @@
                 this.initialHits = 3;
                 this.hitsToGo = this.initialHits;
                 this.powerUp = Math.floor(Math.random() * 2) + 1; // 1 or 2
-                this.color= "rgb(0, 255, 0)";
+                this.color= "rgb(0, 255, 0)"; // gruen
                 this.value = 20;
             }
         }
@@ -116,7 +117,7 @@
                 this.initialHits = 5;
                 this.hitsToGo = this.initialHits;
                 this.powerUp = Math.floor(Math.random() * 2) + 3; //3 or 4
-                this.color = "rgb(0, 0, 255)";
+                this.color = "rgb(0, 255, 255)"; // tuerkis
                 this.value = 50;
             }
         }
@@ -259,14 +260,14 @@
         }
     //Win-Screen
         function WriteWin(){
+            win = true;
             SoundWinning.play();
-            SoundEnde.currentTime=0;
-            clearInterval(interval);
+            SoundWinning.currentTime=0;
             gameCtx.font = "30px Arial";
             gameCtx.fillStyle = "white";
             gameCtx.fillText("Feddich!", 250, 50);
             gameCtx.fillText("Press F5 to Reload", 250, 100);
-            gameCtx.stroke();
+            clearInterval(interval);
         }
 
 //Draw
@@ -379,14 +380,6 @@
 
     //change Brick-Color, depending on hits left 
         function changeBrickColor(brickTC){
-            /*switch(brickTC.hitsToGo){
-                case 2:
-                    brickTC.color = "red";
-                    break;
-                case 3: case 4:
-                    brickTC.color = "green";
-                    break; 
-            }*/
             var transparency = brickTC.hitsToGo/brickTC.initialHits;
             console.log(transparency);
             switch(brickTC.initialHits){
@@ -394,7 +387,7 @@
                     brickTC.color = `rgba(0, 255, 0, ${transparency})`;
                     break;
                 case 5:
-                    brickTC.color = `rgba(0, 0, 255, ${transparency})`;
+                    brickTC.color = `rgba(0, 255, 255, ${transparency})`;
                     break; 
             }
             console.log(brickTC.color);
@@ -714,7 +707,7 @@
                         }
                         break;
                     case 78: //N
-                        if (ballDown == true && lifes > 0) {
+                        if (ballDown == true && lifes > 0 && win == false) {
                             pause = false;
                             startGame();
 
@@ -753,7 +746,7 @@
                             moveY = (-2.5);
                             start = false;
                         } else {
-                            if (ballDown == true && lifes > 0) {
+                            if (ballDown == true && lifes > 0 && win == false) {
                                 pause = false;
                                 startGame();
                             }
