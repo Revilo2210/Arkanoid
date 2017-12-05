@@ -496,7 +496,7 @@
                 if (ballY > gameCanvas.height) {
                     ballDown = true;
                     adjustLife(-1);
-                    WriteFinish();
+                    WriteFinishScreen();
                 } else {
                     if (ballY < (gameCanvas.height / 2) + brickHeight) {
                         brickCollision();
@@ -667,18 +667,18 @@
 
             if (mouseX <= paddleWidth / 2) {
                 paddleX = 0;
-                if (leerpress == false) {
+                if (moveX == 0 && moveY == 0) {
                     ballX = paddleX + paddleWidth / 2;
                 }
             }
             else if (mouseX >= gameCanvas.width - paddleWidth / 2) {
                 paddleX = gameCanvas.width - paddleWidth;
-                if (leerpress == false) {
+                if (moveX == 0 && moveY == 0) {
                     ballX = paddleX + paddleWidth / 2;
                 }
             }
             else {
-                if (leerpress == false) {
+                if (moveX == 0 && moveY == 0) {
                     ballX = mouseX;
                 }
                 paddleX = mouseX - paddleWidth / 2;
@@ -846,6 +846,7 @@
                             if (ballDown == true && lifes > 0) {
                                 if (win == false) {
                                     pause = false;
+                                    spacePress = false;
                                     startGame();
                                 } else {
                                     win = false;
