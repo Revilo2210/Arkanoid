@@ -176,36 +176,66 @@
 //Menus
     //Main-Menu
         function showMainMenu() {
-            gameCanvas.style.background = "url('backgrounds/space_level1.jpg')";
-            scoreBoard.style.visibility = "hidden";
+            var background = new Image();
+            background.src = "backgrounds/menu_background.jpeg";
+            background.onload = function() {
+                gameCtx.drawImage(background, 0, 0, gameCanvas.width, gameCanvas.height);
 
-            interval = setInterval(checkSound, 74000);
+                scoreBoard.style.visibility = "hidden";
 
-            gameCtx.font = "100px Arial";
-            gameCtx.fillStyle = ballColorGradient;
-            gameCtx.fillText("Arkanoid", 200, 100);
+                interval = setInterval(checkSound, 74000);
 
-            gameCtx.font = "40px Arial";
-            gameCtx.fillText("Press Number to start Level", 20, 200);
+                gameCtx.font = "100px Arial";
+                gameCtx.fillStyle = "white";
+                gameCtx.fillText("Arkanoid", 200, 100);
 
-            var img = new Image();
-            img.src = "levelpics/dummy.png";
-            img.onload = function() {
-                gameCtx.drawImage(img, 20, 220, 100, 100);
-                gameCtx.fillText("1", 55, 355);
+                gameCtx.font = "40px Arial";
+                gameCtx.fillText("Press Number to start Level", 20, height - 20);
+            };
 
-                gameCtx.drawImage(img, 140, 220, 100, 100);
-                gameCtx.fillText("2", 175, 355);
-                
-                gameCtx.drawImage(img, 260, 220, 100, 100);
-                gameCtx.fillText("3", 295, 355);
-                
-                gameCtx.drawImage(img, 380, 220, 100, 100);                                
-                gameCtx.fillText("4", 415, 355);
+            var height = (gameCanvas.height / 2) - 50;
+
+            var img1 = new Image();
+            img1.src = "backgrounds/space_level1.jpg";
+            img1.onload = function() {
+                gameCtx.font = "40px Arial";
+                gameCtx.drawImage(img1, 20, height, 100, 100);
+                gameCtx.fillText("1", 55, height + 65);
+
+                gameCtx.stroke();
+            };
+
+            var img2 = new Image();
+            img2.src = "backgrounds/space_level2.jpg";
+            img2.onload = function() {
+                gameCtx.font = "40px Arial";
+                gameCtx.drawImage(img2, 140, height, 100, 100);
+                gameCtx.fillText("2", 175, height + 65);
+
+                gameCtx.stroke();
+            };
+
+            var img3 = new Image();
+            img3.src = "backgrounds/space_level3.jpg";
+            img3.onload = function() {
+                gameCtx.font = "40px Arial";
+                gameCtx.drawImage(img3, 260, height, 100, 100);
+                gameCtx.fillText("3", 295, height + 65);
 
                 gameCtx.stroke();
             };
             
+            var img4 = new Image();
+            img4.src = "backgrounds/space_level4.gif";
+            img4.onload = function() {
+                gameCtx.font = "40px Arial";
+                gameCtx.drawImage(img4, 380, height, 100, 100);                                
+                gameCtx.fillText("4", 415, height + 65);
+
+                gameCtx.stroke();
+            };
+
+
 
             gameCtx.stroke();
         }
@@ -773,7 +803,8 @@
                     case 100: //Numpad 4
                     level = 4;
                     break;
-                    
+                    default:
+                    return; // Anpassen
                 }
                     
                 inMainMenu = false;
@@ -860,41 +891,71 @@
                 <td>
                     <canvas id="gameCanvas" width="800" height="600"></canvas>
                 </td>
-                <td id="scoreBoard">
-                    <table>
+                <td>
+                    <table id="test">
                         <tr>
                             <td>
-                                Score:
+                                <table id="scoreBoard">
+                                    <tr>
+                                        <td style="text-decoration:underline;font-weight:bold;font-size:20px;">
+                                            Stats:
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Score:
+                                        </td>
+                                        <td id="score"/>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Lifes:
+                                        </td>
+                                        <td id="lifes"/>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Level:
+                                        </td>
+                                        <td id="level"/>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Speed:
+                                        </td>
+                                        <td id="speed"/>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Sound:
+                                        </td>
+                                        <td id="sound"/>
+                                    </tr>
+                                </table>
                             </td>
-                            <td id="score"/>
                         </tr>
                         <tr>
                             <td>
-                                Lifes:
+                                <table id="help">
+                                    <tr>    
+                                        <headline>Hilfe:</headline> <p/>                            
+                                        <headline2>Tastenbelegung:</headline2> <br/>
+                                        <htest>Spiel:</htest> <br/>
+                                        - A, D <br/>
+                                        - Pfeiltasten <br/>
+                                        - Maus <p/>
+                                        <htest>Start: </htest> <br/>
+                                        - Leertaste <p/>
+                                        <htest>Pause: </htest> <br/>
+                                        - P <p/>
+                                        <htest>Sound aus/an: </htest> <br/>
+                                        - M <p/>
+                                    </tr>
+                                </table>
                             </td>
-                            <td id="lifes"/>
-                        </tr>
-                        <tr>
-                            <td>
-                                Level:
-                            </td>
-                            <td id="level"/>
-                        </tr>
-                        <tr>
-                            <td>
-                                Speed:
-                            </td>
-                            <td id="speed"/>
-                        </tr>
-                        <tr>
-                            <td>
-                                Sound:
-                            </td>
-                            <td id="sound"/>
                         </tr>
                     </table>
-                </td>
-                <td>
+
                 </td>
             </tr>
         </table>
