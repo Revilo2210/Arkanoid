@@ -55,7 +55,7 @@
         var moveX;
         var moveY;
         var interval;
-        var intervalOverclocking = 20;
+        var intervalOverclocking = 10;
         var mouseX;
 
         //Booleans
@@ -155,7 +155,8 @@
             scoreBoard.style.visibility = "visible";
             gameCanvas.style.border = "red 1px solid";
             
-            paddleY = gameCanvas.height - paddleHeight - 10;
+            paddleY = gameCanvas.height - paddleHeight - 5;
+            paddleX = gameCanvas.width - paddleWidth/2;
 
             setBricks();
 
@@ -176,15 +177,36 @@
     //Main-Menu
         function showMainMenu() {
             gameCanvas.style.background = "url('backgrounds/space_level1.jpg')";
-            //scoreCanvas.style.visibility = "hidden";
             scoreBoard.style.visibility = "hidden";
 
             interval = setInterval(checkSound, 74000);
 
-            gameCtx.font = "50px Arial";
-            gameCtx.fillStyle = "white";
-            gameCtx.fillText("Arkanoid", 250, 80);
-            gameCtx.fillText("Press Enter to Start", 250, 150);
+            gameCtx.font = "100px Arial";
+            gameCtx.fillStyle = ballColorGradient;
+            gameCtx.fillText("Arkanoid", 200, 100);
+
+            gameCtx.font = "40px Arial";
+            gameCtx.fillText("Press Number to start Level", 20, 200);
+
+            var img = new Image();
+            img.src = "levelpics/dummy.png";
+            img.onload = function() {
+                gameCtx.drawImage(img, 20, 220, 100, 100);
+                gameCtx.fillText("1", 55, 355);
+
+                gameCtx.drawImage(img, 140, 220, 100, 100);
+                gameCtx.fillText("2", 175, 355);
+                
+                gameCtx.drawImage(img, 260, 220, 100, 100);
+                gameCtx.fillText("3", 295, 355);
+                
+                gameCtx.drawImage(img, 380, 220, 100, 100);                                
+                gameCtx.fillText("4", 415, 355);
+
+                gameCtx.stroke();
+            };
+            
+
             gameCtx.stroke();
         }
 
@@ -196,8 +218,6 @@
 
     //Score-Menu
         function placeScoreCanvas() {
-            //scoreCanvas = document.getElementById("scoreCanvas");
-            //scoreCtx = scoreCanvas.getContext("2d");
             scoreBoard = document.getElementById("scoreBoard");
 
             labelScore = document.getElementById("score");
@@ -209,12 +229,8 @@
             labelScore.innerHTML = score;
             labelLifes.innerHTML = lifes;
             labelLevel.innerHTML = level;
-            labelSpeed.innerHTML = 0; //tbd
+            adjustSpeed();
             labelSound.innerHTML = "On";
-
-            /*scoreCanvas.style.left = `${gameCanvas.width + 20}px`;
-            scoreCanvas.style.position = "absolute";
-            scoreCanvas.style.border = "red 1px solid";*/
         }
         
         function startGame() {
@@ -248,7 +264,6 @@
                 VoiceGameOver.currentTime=0;
                 gameCtx.fillText("Looser!!!", 250, 50);
                 gameCtx.fillText("Press F5 to Reload", 250, 100);
-                gameCtx.fillText("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 0, 150);
                 gameCtx.stroke();
             } else{
                 SoundBallDown.play();
@@ -384,7 +399,6 @@
     //change Brick-Color, depending on hits left 
         function changeBrickColor(brickTC){
             var transparency = brickTC.hitsToGo/brickTC.initialHits;
-            console.log(transparency);
             switch(brickTC.initialHits){
                 case 3:
                     brickTC.color = `rgba(0, 255, 0, ${transparency})`;
@@ -393,7 +407,6 @@
                     brickTC.color = `rgba(0, 255, 255, ${transparency})`;
                     break; 
             }
-            console.log(brickTC.color);
         }
 
     //draw PowerUps
@@ -421,7 +434,7 @@
         function spawnPwUp(x, y, type){
             switch(type) {
                 case 0: 
-                    if(Math.floor(Math.random() * 10) == 0) {
+                    if(Math.floor(Math.random() * 20) == 0) {
                         powerUpQueue.push(new PowerUpBall(x, y, type));
                     } 
                     break;
@@ -455,7 +468,7 @@
             if(!rectCollision(paddleX, paddleY, paddleWidth, paddleHeight)){
                 if (ballY > gameCanvas.height) {
                     ballDown = true;
-                    lifes-=1;
+                    adjustLife(-1);
                     WriteFinish();
                 } else {
                     if (ballY < (gameCanvas.height / 2) + brickHeight) {
@@ -474,6 +487,31 @@
             }
         } 
 
+        function adjustScore(change){
+            score += change;
+            labelScore.innerHTML = score;
+        }
+
+        function resetScore(){
+            score = 0;
+            labelScore.innerHTML = score;
+        }
+
+        function adjustLife(change) {
+            lifes += change;
+            labelLifes.innerHTML = lifes;
+        }
+
+        function adjustLevel(change) {
+            level = change;
+            labelLevel.innerHTML = level;
+        }
+
+        function adjustSpeed(){
+            var speed = Math.floor(Math.sqrt(moveX*moveX + moveY*moveY)*10)/10;
+            labelSpeed.innerHTML = `${speed}px per ${intervalOverclocking}ms`;
+        }
+
     //support-method brick-collision logic
         function brickCollision(){
             for(var i = 0; i<bricks.length; i++) {
@@ -482,7 +520,8 @@
                     bricks[i].hitsToGo -=1;
                     changeBrickColor(bricks[i]);
                     if(bricks[i].hitsToGo<=0){
-                        score += bricks[i].value;
+                        adjustScore(bricks[i].value);
+                        console.log(score + " " + bricks[i].value);
                         spawnPwUp(bricks[i].x + plusX, bricks[i].y + plusY, bricks[i].powerUp);
                         bricks.splice(i, 1);
                         if(bricks.length==0){
@@ -503,7 +542,7 @@
             } else {
                 ballY += (paddleHeight/2) + 0,5;
                 ballDown = true;
-                lifes-=1;
+                adjustLife(-1);
                 WriteFinish();
             }
         }
@@ -515,7 +554,6 @@
                 && powerUpQueue[index].x - radiusPwUp/2 <= paddleX + paddleWidth){
                 activatePwUp(powerUpQueue[index].type);
                 powerUpQueue.splice(index, 1);
-                console.log("aktiviert");
             } else {
                 if(powerUpQueue[index].y < gameCanvas.height){
                     powerUpQueue[index].y += movePwUp;
@@ -625,17 +663,19 @@
         function activatePwUp(type){
             var change = 2;
             switch(type){
-                case 0: lifes++; break;
+                case 0: adjustLife(1); break;
                 case 1:
-                    if(intervalOverclocking >= 5) {
+                    if(intervalOverclocking >= 10/change) {
                         intervalOverclocking /= change;
-                        setTimeout(function(){intervalOverclocking *= change;}, powerUpTimer);
+                        adjustSpeed();
+                        setTimeout(function(){intervalOverclocking *= change; adjustSpeed();}, powerUpTimer);
                     }
                     break;
                 case 2:
-                    if(intervalOverclocking < 40) {
+                    if(intervalOverclocking <= 10*change) {
                         intervalOverclocking *= change;
-                        setTimeout(function(){intervalOverclocking /= change;}, powerUpTimer);
+                        adjustSpeed();
+                        setTimeout(function(){intervalOverclocking /= change; adjustSpeed();}, powerUpTimer);
                     }
                     break;
                 case 3:
@@ -715,10 +755,30 @@
             }
           
             if(inMainMenu) {
-                if(key_code == 13){
-                    inMainMenu = false;
-                    initGame();
+
+                switch(key_code){
+                    case 49: //1
+                    case 97: //Numpad 1
+                    level = 1;
+                    break;
+                    case 50: //2
+                    case 98: //Numpad 2
+                    level = 2;
+                    break;
+                    case 51: //3
+                    case 99: //Numpad 3
+                    level = 3;
+                    break;
+                    case 52: //4
+                    case 100: //Numpad 4
+                    level = 4;
+                    break;
+                    
                 }
+                    
+                inMainMenu = false;
+                initGame();
+
             } else {
                 switch (key_code){                
                     case 68: //D
@@ -767,6 +827,7 @@
                             leerpress = true;
                             moveX = 2.5;
                             moveY = (-2.5);
+                            adjustSpeed();
                             start = false;
                         } else {
                             if (ballDown == true && lifes > 0 && win == false) {
@@ -794,10 +855,6 @@
     <element onmousemove="gameCanvas">
     <element onkeydown="gameCanvas">
     <element onkeyup="gameCanvas">
-    <!--canvas id="scoreCanvas" width="200" height="500"-->
-    
-        
-    </canvas>
     <table>
             <tr>
                 <td>
@@ -806,12 +863,10 @@
                 <td id="scoreBoard">
                     <table>
                         <tr>
-                            <th>
-                            
+                            <td>
                                 Score:
-                                <script>var text = 3;</script>
-                            </th>
-                            <th id="score"/>
+                            </td>
+                            <td id="score"/>
                         </tr>
                         <tr>
                             <td>
@@ -821,7 +876,7 @@
                         </tr>
                         <tr>
                             <td>
-                                Lifes:
+                                Level:
                             </td>
                             <td id="level"/>
                         </tr>
