@@ -13,27 +13,28 @@ Ein Uni Projekt mit dem Ziel das bekannte Retro Spiel "Arkanoid" mit JavaScript 
 
 ## How to play
 
-- D oder rechte Pfeiltaste: Bewegt das Pannel nach rechts
-- A oder linke Pfeiltaste: Bewegt das Pannel nach links
-- Steuerung des Pannels ist auch mit der Maus möglich. (Pannel = X-Position der Maus)
-- N: Weiterspielen, nachdem der Ball nicht mit dem Paddel getroffen wurde
-- P: Spiel pausieren
-- Leertaste: Spiel beginnen -> Ball vom Pannel lösen
-- B: Bot starten (Für Testzwecke gedacht)
-- Enter: Aus dem Menü ins Spiel wechseln
+- ***D*** oder ***rechte Pfeiltaste***: Bewegt das Pannel nach rechts
+- ***A*** oder ***linke Pfeiltaste***: Bewegt das Pannel nach links
+- Steuerung des Pannels ist auch mit der ***Maus*** möglich. (Pannel = X-Position der Maus)
+- ***N***: Weiterspielen, nachdem der Ball nicht mit dem Paddel getroffen wurde
+- ***P***: Spiel pausieren
+- ***Leertaste***: Spiel beginnen -> Ball vom Pannel lösen
+- ***B***: Bot starten (Für Testzwecke gedacht)
+- ***Enter***: Aus dem Menü ins Spiel wechseln
 
 
 ## Wer war für was zuständig?
 
 ### Simon Tebbe:
-- Collision Detection (Collision des Balls mit: den Blöcken, dem Pannel und den Wänden. Jeweils natürlich mit beachtung des korrekten abprallens in die richtige Richtung)
+- Collision Detection (Collision des Balls mit: den Blöcken, dem Pannel und den Wänden. Jeweils natürlich mit Beachtung des korrekten Abprallens in die richtige Richtung)
 - Power Ups (Ballgeschwindigkeit erhöhen/verringern, Paddle vergrößern/verkleinern, Leben hinzufügen)
-- Korrektes positionieren der Blöcke
-- Leben der Blöcke
+- Blöcke und deren Management
+- Leveldesign
+- Scoreboard
+- Tastenhandler
 
 ### Oliver Rehbach:
 - Menü
-- Live Anzeige (Leben, Level, Score, ...)
 - Farbänderung des Balls
 - Levelauswahl
 - Design
@@ -45,11 +46,13 @@ Ein Uni Projekt mit dem Ziel das bekannte Retro Spiel "Arkanoid" mit JavaScript 
 - Pausieren des Spiels
 - Aus-/Einschalten der Musik und Soundeffekten
 - Bot zum testen
+- Tastenhandler (keypaddle)
 
 
 ## Known Bugs:
-- Läuf auf Chrome und Microsoft Edge je nach Leistung des PCs langsamer als vorgesehen
-- Ball fliegt in ganz wenigen fällen noch durch einen Block durch
+- Läuf je nach Leistung des PCs langsamer als vorgesehen
+- Collision Detection in einigen wenigen Fällen noch etwas ungenau
+- Internet Explorer wird nicht unterstützt
 
 
 ## License

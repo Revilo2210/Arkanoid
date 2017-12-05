@@ -68,6 +68,8 @@
         var mute = false;
         var bot = false;
         var win = false;
+        var rechtsklick = false;
+        var linksklick = false;
 
         //Gamevars
         var lifes = 3;
@@ -164,7 +166,7 @@
             ballColorGradient = gameCtx.createLinearGradient(0, 0, gameCanvas.width, 0)
             ballColorGradient.addColorStop("0", "yellow");
             ballColorGradient.addColorStop("0.25", "green");
-            ballColorGradient.addColorStop("0.5", "blue");
+            ballColorGradient.addColorStop("0.5", this.color = "rgb(0, 255, 255)");
             ballColorGradient.addColorStop("0.75", "magenta");
             ballColorGradient.addColorStop("1.0", "red");
         }
@@ -279,6 +281,7 @@
             drawPowerUps();
             drawPaddle();
             moveBall();
+            movePaddle();
             //drawScore();
 			
             if(SoundBackground.currentTime >= 74){
@@ -674,11 +677,39 @@
             VoiceGameOver.volume = vol;
             SoundWinning.volume = vol;
         }
+
+        function movePaddle() { // Sofortige Bewegung des Pannels
+            if (rechtsklick == true){
+                if ((paddleX + paddleWidth) < gameCanvas.width) {
+                    paddleX += paddleMove;
+                    if (moveX == 0 && moveY == 0)
+                        ballX += paddleMove;
+                }
+            }
+
+            if (linksklick == true){
+                if (paddleX >= 10) {
+                    paddleX -= paddleMove;
+                    if (moveX == 0 && moveY == 0)
+                        ballX -= paddleMove;
+                }
+            }
+        }
+
+        function keyPaddle(ev){ // Key Up Tastenhandler
+            if (ev.keyCode == 68 || ev.keyCode == 39) {
+                rechtsklick = false;
+            }
+            if (ev.keyCode == 65 || ev.keyCode == 37) {
+                linksklick = false;
+            }
+        }
+        
           
 //key-handler
         function keyHandler(ev) {
             var key_code = ev.keyCode;
-            
+
             if(key_code == 77){
                 soundHandler();
             }
@@ -692,19 +723,11 @@
                 switch (key_code){                
                     case 68: //D
                     case 39: //Right Arrow
-                        if ((paddleX + paddleWidth) < gameCanvas.width) {
-                            paddleX += paddleMove;
-                            if (moveX == 0 && moveY == 0)
-                                ballX += paddleMove;
-                        }
-                        break;
+                        rechtsklick = true;
+                        break; 
                     case 65: //A
                     case 37: //Left Arrow
-                        if (paddleX >= 10) {
-                            paddleX -= paddleMove;
-                            if (moveX == 0 && moveY == 0)
-                                ballX -= paddleMove;
-                        }
+                        linksklick = true;
                         break;
                     case 78: //N
                         if (ballDown == true && lifes > 0 && win == false) {
@@ -763,12 +786,14 @@
         document.addEventListener("DOMContentLoaded", init, false);
         document.addEventListener("mousemove", show_position, false);
         document.addEventListener("keydown", keyHandler, false);
+        document.addEventListener("keyup", keyPaddle, false);
     </script>
 </head>
 
 <body>
     <element onmousemove="gameCanvas">
-    
+    <element onkeydown="gameCanvas">
+    <element onkeyup="gameCanvas">
     <!--canvas id="scoreCanvas" width="200" height="500"-->
     
         
