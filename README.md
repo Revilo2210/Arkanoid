@@ -56,6 +56,7 @@ Ein Uni Projekt mit dem Ziel das bekannte Retro Spiel "Arkanoid" mit JavaScript 
 
 
 ## License
+MIT License
 
 Copyright (c) 2017 Simon Tebbe, Oliver Rehbach, Janic Steckelbach
 
