@@ -8,8 +8,8 @@
     <link rel="stylesheet" type="text/css" href="Style.css">
     <script type="text/javascript" src="levels.json"></script>
     <script>
-//Variablen
-        //Feld
+//Variables
+    //Field
         var gameCanvas;
         var gameCtx;
         var scoreBoard;
@@ -20,20 +20,20 @@
         var labelSpeed;
         var labelSound;
 
-        //Paddle
+    //Paddle
         var paddleX = 300;
         var paddleY;
         var paddleWidth = 100;
         var paddleHeight = 20;
         var paddleMove = 20;
 
-        //Ball
+    //Ball
         var ballX;
         var ballY;
         var radius = 10;
         var ballColorGradient;
 
-        //Bricks
+    //Bricks
         var bricks = [];
         var brickHeight = 20;
         var brickWidth = 695 / 12;
@@ -49,32 +49,32 @@
         var powerUpQueue = [];
         var powerUpTimer = 10000;
 
-        //Bewegung
+    //Movement
         var moveX = 0;
         var moveY = 0;
         var interval;
         var intervalOverclocking = 10;
         var mouseX;
 
-        //Booleans
+    //Booleans
         var start = true;
         var ballDown = false;
-        var leerpress = false;
+        var spacePress = false;
         var pause = false;
         var canvasVisible = true;
         var inMainMenu = true;
         var mute = false;
         var bot = false;
         var win = false;
-        var rechtsklick = false;
-        var linksklick = false;
+        var rightClick = false;
+        var leftClick = false;
 
-        //Gamevars
+    //Gamevars
         var lifes = 3;
         var level = 1;
         var score = 0;
 
-        //Sound
+    //Sound
         var vol = 1;
         var SoundBlockMetalHard = new Audio("sounds/Metal_Hard.wav"); // buffers automatically when created
         var SoundBlock = new Audio("sounds/BlockPlop.wav");
@@ -85,7 +85,7 @@
         var SoundBackground = new Audio("sounds/Background.wav");
         var SoundWinning = new Audio("sounds/Win.wav");
 
-//(Block-)Klassen
+//(Brick-)Classes
         class Brick {
             constructor(x, y) {
                 this.x = x;
@@ -131,8 +131,8 @@
             }
         }
 
-//Funktionen
-    //Initieren
+//Initialize
+    //Initialize
         function init() {
 
             SoundBackground.play();
@@ -143,18 +143,17 @@
 
             initBallColorGradient();
 
-            placeScoreCanvas();
+            setScoreTable();
 
             showMainMenu();
         }
 
         function initGame() {
-            //scoreCanvas.style.visibility = "visible";
             scoreBoard.style.visibility = "visible";
             gameCanvas.style.border = "red 1px solid";
             
             paddleY = gameCanvas.height - paddleHeight - 5;
-            paddleX = gameCanvas.width/2 - paddleWidth/2;
+            paddleX = gameCanvas.width / 2 - paddleWidth / 2;
 
             setLevel();
 
@@ -176,7 +175,8 @@
     function showMainMenu() {
         var imageX = (gameCanvas.width / 2) - 230;
         var imageY = (gameCanvas.height / 2) - 50;
-        
+    
+        //Backgroundimage
         var background = new Image();
         background.src = "backgrounds/menu_background.jpeg";
         background.onload = function() {
@@ -184,7 +184,8 @@
 
             scoreBoard.style.visibility = "hidden";
 
-            interval = setInterval(checkSound, 74000);
+            //Sound Loop
+            interval = setInterval((() => {SoundBackground.currentTime = 0;}), 74000);
 
             gameCtx.font = "100px Arial";
             gameCtx.fillStyle = "white";
@@ -195,6 +196,7 @@
             gameCtx.fillText("Press Number to start Level", (gameCanvas.width / 2), imageY - 20);
         };
 
+        //Image Level 1
         var img1 = new Image();
         img1.src = "backgrounds/space_level1.jpg";
         img1.onload = function() {
@@ -205,7 +207,8 @@
             gameCtx.stroke();
             
             imageX += 120;
-
+            
+        //Image Level 2
             var img2 = new Image();
             img2.src = "backgrounds/space_level2.jpg";
             img2.onload = function() {
@@ -217,6 +220,7 @@
 
                 imageX += 120;
 
+        //Image Level 3
                 var img3 = new Image();
                 img3.src = "backgrounds/space_level3.jpg";
                 img3.onload = function() {
@@ -242,14 +246,8 @@
         };
     }
 
-        //Sound Loop
-        function checkSound(){
-                SoundBackground.currentTime=0;
-        }
-
-
     //Score-Menu
-        function placeScoreCanvas() {
+        function setScoreTable() {
             scoreBoard = document.getElementById("scoreBoard");
 
             labelScore = document.getElementById("score");
@@ -274,16 +272,14 @@
 
             ballDown = false;
             start = true;
-            leerpress = false;
+            spacePress = false;
 
             interval = setInterval(draw, intervalOverclocking);
-
-            //mouseX = document.all ? event.offsetX : event.pageX;
         }
 
 //Event-Screens
     //"Fail-Screen"
-        function WriteFinish() {
+        function WriteFinishScreen() {
             clearInterval(interval);
             gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
             drawPaddle();
@@ -291,9 +287,9 @@
                 gameCtx.font = "30px Arial";
                 gameCtx.fillStyle = ballColorGradient;
                 SoundGameOver.play();
-                SoundGameOver.currentTime=0;
+                SoundGameOver.currentTime = 0;
                 VoiceGameOver.play();
-                VoiceGameOver.currentTime=0;
+                VoiceGameOver.currentTime = 0;
                 gameCtx.fillText("Looser!", (gameCanvas.width / 2), 50);
                 gameCtx.fillText("Press F5 to Reload", 250, 100);
                 gameCtx.stroke();
@@ -308,7 +304,7 @@
             }
         }
     //Win-Screen
-        function WriteWin(){
+        function WriteWinScreen(){
             win = true;
             SoundWinning.play();
             SoundWinning.currentTime=0;
@@ -329,10 +325,9 @@
             drawPaddle();
             moveBall();
             movePaddle();
-            //drawScore();
 			
             if(SoundBackground.currentTime >= 74){
-                SoundBackground.currentTime=0;
+                SoundBackground.currentTime = 0;
             }
         }
 
@@ -558,7 +553,7 @@
                         if(bricks.length==0){
                             draw();
                             ballDown = true;
-                            WriteWin();
+                            WriteWinScreen();
                         }
                     }
                     break;
@@ -574,7 +569,7 @@
                 ballY += (paddleHeight/2) + 0,5;
                 ballDown = true;
                 adjustLife(-1);
-                WriteFinish();
+                WriteFinishScreen();
             }
         }
 
@@ -599,27 +594,27 @@
 
             var kathetenL = Math.sqrt((radius*radius)/2);
 
-            if(ballX >= rectX && ballX <= rectX + rectW &&                          //Ball trifft...
-                ((ballY - radius <= rectY + rectH && ballY - radius > rectY)        //... von unten
-                ||(ballY + radius <= rectY + rectH && ballY + radius > rectY))){    //... von oben
+            if(ballX >= rectX && ballX <= rectX + rectW &&                          //Ball hits...
+                ((ballY - radius <= rectY + rectH && ballY - radius > rectY)        //... from below
+                ||(ballY + radius <= rectY + rectH && ballY + radius > rectY))){    //... from above
                     moveY *= -1;
                     return true;
             }
-            if(ballY >= rectY && ballY <= rectY + rectH &&                          //Ball trifft...
-                ((ballX - radius <= rectX + rectW && ballX - radius > rectX)        //... von links 
-                ||(ballX + radius < rectX + rectW && ballX + radius >= rectX))){    //... von rechts
+            if(ballY >= rectY && ballY <= rectY + rectH &&                          //Ball hits...
+                ((ballX - radius <= rectX + rectW && ballX - radius > rectX)        //... from left 
+                ||(ballX + radius < rectX + rectW && ballX + radius >= rectX))){    //... from right
                     moveX *= -1;
                     return true;
             }
-            if(ballX + kathetenL >= rectX && ballX + kathetenL < rectX + rectW){        //Ball trifft linke...
-                if(ballY - kathetenL <= rectY + rectH && ballY - kathetenL > rectY){    //... untere Ecke
+            if(ballX + kathetenL >= rectX && ballX + kathetenL < rectX + rectW){        //Ball hits left...
+                if(ballY - kathetenL <= rectY + rectH && ballY - kathetenL > rectY){    //... lower corner
                     if(moveX>0)
                         moveX *= -1;
                     if(moveY<0)
                         moveY *= -1;
                     return true;
                 }
-                if(ballY + kathetenL < rectY + rectH && ballY + kathetenL >= rectY){    //... obere Ecke
+                if(ballY + kathetenL < rectY + rectH && ballY + kathetenL >= rectY){    //... upper corner
                     if(moveX>0)
                         moveX *= -1;
                     if(moveY>0)
@@ -629,15 +624,15 @@
                 }
                 return false;    
             }
-            if(ballX - kathetenL > rectX && ballX - kathetenL <= rectX + rectW){        //Ball trifft rechte...  
-                if(ballY - kathetenL <= rectY + rectH && ballY - kathetenL > rectY){    //... untere Ecke
+            if(ballX - kathetenL > rectX && ballX - kathetenL <= rectX + rectW){        //Ball hits right...  
+                if(ballY - kathetenL <= rectY + rectH && ballY - kathetenL > rectY){    //... lower corner
                     if(moveX<0)
                         moveX *= -1;
                     if(moveY<0)
                         moveY *= -1;
                     return true;
                 }
-                if(ballY + kathetenL < rectY + rectH && ballY + kathetenL >= rectY){    //... obere Ecke
+                if(ballY + kathetenL < rectY + rectH && ballY + kathetenL >= rectY){    //... upper corner
                     if(moveX<0)
                         moveX *= -1;
                     if(moveY>0)
@@ -649,7 +644,7 @@
         }
 
 //Sounds
-        function playBrickSound(hTG){
+        function playBrickSound(hTG){ //hTG = hits to go
             switch(hTG){
                 case 1:
                     SoundBlock.play();
@@ -666,7 +661,7 @@
             }
         }
 
-//Paddle follows mouse
+//Paddle follows mousespacepress
         function show_position(event) {
             mouseX = document.all ? event.offsetX : event.pageX;
 
@@ -690,7 +685,7 @@
             } 
         }
 
-        //paddle weite u position checken
+//Check paddle width and position
         function activatePwUp(type){
             var change = 2;
             switch(type){
@@ -732,8 +727,8 @@
         }
   
         function soundHandler() {
-            if(vol>0){
-                vol=0;
+            if(vol > 0){
+                vol = 0;
                 labelSound.innerHTML = "Off";
             } else{ 
                 vol = 1;
@@ -749,8 +744,8 @@
             SoundWinning.volume = vol;
         }
 
-        function movePaddle() { // Sofortige Bewegung des Pannels
-            if (rechtsklick == true){
+        function movePaddle() { // Instant Movement of the Paddle
+            if (rightClick == true){
                 if ((paddleX + paddleWidth) < gameCanvas.width) {
                     paddleX += paddleMove;
                     if (moveX == 0 && moveY == 0)
@@ -758,7 +753,7 @@
                 }
             }
 
-            if (linksklick == true){
+            if (leftClick == true){
                 if (paddleX >= 10) {
                     paddleX -= paddleMove;
                     if (moveX == 0 && moveY == 0)
@@ -767,17 +762,17 @@
             }
         }
 
-        function keyPaddle(ev){ // Key Up Tastenhandler
+        function keyPaddle(ev){ // Key Up Keyhandler
             if (ev.keyCode == 68 || ev.keyCode == 39) {
-                rechtsklick = false;
+                rightClick = false;
             }
             if (ev.keyCode == 65 || ev.keyCode == 37) {
-                linksklick = false;
+                leftClick = false;
             }
         }
         
           
-//key-handler
+//key-handlerspacepress
         function keyHandler(ev) {
             var key_code = ev.keyCode;
 
@@ -816,11 +811,11 @@
                 switch (key_code){                
                     case 68: //D
                     case 39: //Right Arrow
-                        rechtsklick = true;
+                        rightClick = true;
                         break; 
                     case 65: //A
                     case 37: //Left Arrow
-                        linksklick = true;
+                        leftClick = true;
                         break;
                     case 80: //P
                         if(pause == false && ballDown == false) {
@@ -841,8 +836,8 @@
                     case 32: //Space
                         if (start) {
                             leerpress = true;
-                            moveX = 2.5;
-                            moveY = (-2.5);
+                            moveX = 2;
+                            moveY = (-2);
                             adjustSpeed();
                             start = false;
                         } else {
@@ -886,7 +881,7 @@
                     <canvas id="gameCanvas" width="800" height="600"></canvas>
                 </td>
                 <td>
-                    <table id="test">
+                    <table id="info">
                         <tr>
                             <td>
                                 <table id="scoreBoard">
