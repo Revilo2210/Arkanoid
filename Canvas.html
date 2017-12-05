@@ -173,86 +173,74 @@
 
 //Menus
     //Main-Menu
-        function showMainMenu() {
-            var imageX = (gameCanvas.width / 2) - 230;
-            var imageY = (gameCanvas.height / 2) - 50;
+    function showMainMenu() {
+        var imageX = (gameCanvas.width / 2) - 230;
+        var imageY = (gameCanvas.height / 2) - 50;
+        
+        var background = new Image();
+        background.src = "backgrounds/menu_background.jpeg";
+        background.onload = function() {
+            gameCtx.drawImage(background, 0, 0, gameCanvas.width, gameCanvas.height);
+
+            scoreBoard.style.visibility = "hidden";
+
+            interval = setInterval(checkSound, 74000);
+
+            gameCtx.font = "100px Arial";
+            gameCtx.fillStyle = "white";
+            gameCtx.textAlign="center"; 
+            gameCtx.fillText("Arkanoid", (gameCanvas.width / 2), 100);
+
+            gameCtx.font = "40px Arial";
+            gameCtx.fillText("Press Number to start Level", (gameCanvas.width / 2), imageY - 20);
+        };
+
+        var img1 = new Image();
+        img1.src = "backgrounds/space_level1.jpg";
+        img1.onload = function() {
+            gameCtx.font = "40px Arial";
+            gameCtx.drawImage(img1, imageX, imageY, 100, 100);
+            gameCtx.fillText("1", imageX + 50, imageY + 65);
+
+            gameCtx.stroke();
             
-            var background = new Image();
-            background.src = "backgrounds/menu_background.jpeg";
-            background.onload = function() {
-                gameCtx.drawImage(background, 0, 0, gameCanvas.width, gameCanvas.height);
-
-                scoreBoard.style.visibility = "hidden";
-
-                interval = setInterval(checkSound, 74000);
-
-                gameCtx.font = "100px Arial";
-                gameCtx.fillStyle = "white";
-                gameCtx.textAlign="center"; 
-                gameCtx.fillText("Arkanoid", (gameCanvas.width / 2), 100);
-
-                gameCtx.font = "40px Arial";
-                gameCtx.fillText("Press Number to start Level", (gameCanvas.width / 2), imageY - 20);
-            };
-
-            var img1 = new Image();
-            img1.src = "backgrounds/space_level1.jpg";
-            img1.onload = function() {
-                console.log("image 1 geladen");
-                
-                gameCtx.font = "40px Arial";
-                gameCtx.drawImage(img1, imageX, imageY, 100, 100);
-                gameCtx.fillText("1", imageX + 50, imageY + 65);
-
-                gameCtx.stroke();
-                
-                imageX += 120;
-            };
+            imageX += 120;
 
             var img2 = new Image();
             img2.src = "backgrounds/space_level2.jpg";
-            img2.onload = setTimeout(() => {
-                console.log("image 2 geladen");
-                
+            img2.onload = function() {
                 gameCtx.font = "40px Arial";
                 gameCtx.drawImage(img2, imageX, imageY, 100, 100);
                 gameCtx.fillText("2", imageX + 50, imageY + 65);
 
                 gameCtx.stroke();
 
-                imageX += 120;                
-            }, 50);
-
-            var img3 = new Image();
-            img3.src = "backgrounds/space_level3.jpg";
-            img3.onload = setTimeout(() => {
-                console.log("image 3 geladen");
-                
-                gameCtx.font = "40px Arial";
-                gameCtx.drawImage(img3, imageX, imageY, 100, 100);
-                gameCtx.fillText("3", imageX + 50, imageY + 65);
-
-                gameCtx.stroke();
-
-                imageX += 120;                
-            }, 100);
-
-            var img4 = new Image();
-            img4.src = "backgrounds/space_level4.gif";
-            img4.onload = setTimeout(() => {
-                console.log("image 4 geladen");
-                
-                gameCtx.font = "40px Arial";
-                gameCtx.drawImage(img4, imageX, imageY, 100, 100);                                
-                gameCtx.fillText("4", imageX + 50, imageY + 65);
-
-                gameCtx.stroke();
-
                 imageX += 120;
-            }, 150);
 
-            gameCtx.stroke();
-        }
+                var img3 = new Image();
+                img3.src = "backgrounds/space_level3.jpg";
+                img3.onload = function() {
+                    gameCtx.font = "40px Arial";
+                    gameCtx.drawImage(img3, imageX, imageY, 100, 100);
+                    gameCtx.fillText("3", imageX + 50, imageY + 65);
+
+                    gameCtx.stroke();
+
+                    imageX += 120;
+
+                    var img4 = new Image();
+                    img4.src = "backgrounds/space_level4.gif";
+                    img4.onload = function() {
+                        gameCtx.font = "40px Arial";
+                        gameCtx.drawImage(img4, imageX, imageY, 100, 100);                                
+                        gameCtx.fillText("4", imageX + 50, imageY + 65);
+
+                        gameCtx.stroke();
+                    };
+                };
+            };
+        };
+    }
 
         //Sound Loop
         function checkSound(){
@@ -306,16 +294,16 @@
                 SoundGameOver.currentTime=0;
                 VoiceGameOver.play();
                 VoiceGameOver.currentTime=0;
-                gameCtx.fillText("Looser!!!", 250, 50);
+                gameCtx.fillText("Looser!", (gameCanvas.width / 2), 50);
                 gameCtx.fillText("Press F5 to Reload", 250, 100);
                 gameCtx.stroke();
             } else{
                 SoundBallDown.play();
                 SoundBallDown.currentTime=0;
                 gameCtx.font = "30px Arial";
-                gameCtx.fillText("Ball Down", 250, 50);
-                gameCtx.fillText("Leben: " + lifes, 250, 100);
-                gameCtx.fillText("N zum Neustarten", 250, 150);
+                gameCtx.fillText("Ball Down", (gameCanvas.width / 2), 50);
+                gameCtx.fillText("Remaining Lives: " + lifes, (gameCanvas.width / 2), 100);
+                gameCtx.fillText("Space To Restart", (gameCanvas.width / 2) , 150);
                 gameCtx.stroke();
             }
         }
@@ -326,8 +314,8 @@
             SoundWinning.currentTime=0;
             gameCtx.font = "30px Arial";
             gameCtx.fillStyle = "white";
-            gameCtx.fillText("Feddich!", 250, 50);
-            gameCtx.fillText("Press F5 to Reload", 250, 100);
+            gameCtx.fillText("You Won!", (gameCanvas.width / 2), 50);
+            gameCtx.fillText("Press Space to start the next Level",(gameCanvas.width / 2), 100);
             clearInterval(interval);
         }
 
@@ -933,17 +921,17 @@
                             <td>
                                 <table id="help">
                                     <tr>    
-                                        <headline>Hilfe:</headline> <p/>                            
-                                        <headline2>Tastenbelegung:</headline2> <br/>
+                                        <headline>Help:</headline> <p/>                            
+                                        <headline2>Controls:</headline2> <br/>
                                         <htest>Spiel:</htest> <br/>
                                         - A, D <br/>
-                                        - Pfeiltasten <br/>
-                                        - Maus <p/>
+                                        - Arrows <br/>
+                                        - Mouse <p/>
                                         <htest>Start: </htest> <br/>
-                                        - Leertaste <p/>
-                                        <htest>Pause: </htest> <br/>
+                                        - Space <p/>
+                                        <htest>Break: </htest> <br/>
                                         - P <p/>
-                                        <htest>Sound aus/an: </htest> <br/>
+                                        <htest>Sound on/off: </htest> <br/>
                                         - M <p/>
                                     </tr>
                                 </table>
