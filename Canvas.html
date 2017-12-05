@@ -75,12 +75,12 @@
 
         //Sound
         var vol = 1;
-        var SoundBlockExplode = new Audio("sounds/explosion.wav"); // buffers automatically when created
-        var SoundBlockMetalHard = new Audio("sounds/Metal_Hard.wav");
-        var SoundBlock = new Audio("sounds/sf02.wav");
+        var SoundBlockMetalHard = new Audio("sounds/Metal_Hard.wav"); // buffers automatically when created
+        var SoundBlock = new Audio("sounds/BlockPlop.wav");
         var SoundBlockMetalSoft = new Audio("sounds/Metal_Soft.wav");
         var SoundBallDown = new Audio("sounds/Sad_Trombone.wav");
-        var SoundEnde = new Audio("sounds/werner_blamage.wav");
+        var SoundGameOver = new Audio("sounds/GameOverSound.wav");
+        var VoiceGameOver = new Audio("sounds/GameOverVoice.wav");
         var SoundBackground = new Audio("sounds/Background.wav");
         var SoundWinning = new Audio("sounds/Win.wav");
 
@@ -172,9 +172,11 @@
 //Menus
     //Main-Menu
         function showMainMenu() {
-            gameCanvas.style.background = "url('space.jpg')";
+            gameCanvas.style.background = "url('backgrounds/space_level1.jpg')";
             //scoreCanvas.style.visibility = "hidden";
             scoreBoard.style.visibility = "hidden";
+
+            interval = setInterval(checkSound, 74000);
 
             gameCtx.font = "50px Arial";
             gameCtx.fillStyle = "white";
@@ -182,6 +184,13 @@
             gameCtx.fillText("Press Enter to Start", 250, 150);
             gameCtx.stroke();
         }
+
+        //Sound Loop
+        function checkSound(){
+                SoundBackground.currentTime=0;
+        }
+
+
     //Score-Menu
         function placeScoreCanvas() {
             //scoreCanvas = document.getElementById("scoreCanvas");
@@ -230,8 +239,10 @@
             if(lifes == 0){
                 gameCtx.font = "30px Arial";
                 gameCtx.fillStyle = ballColorGradient;
-                SoundEnde.play();
-                SoundEnde.currentTime=0;
+                SoundGameOver.play();
+                SoundGameOver.currentTime=0;
+                VoiceGameOver.play();
+                VoiceGameOver.currentTime=0;
                 gameCtx.fillText("Looser!!!", 250, 50);
                 gameCtx.fillText("Press F5 to Reload", 250, 100);
                 gameCtx.fillText("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 0, 150);
@@ -662,12 +673,12 @@
                 labelSound.innerHTML = "On";
             }
             SoundBackground.volume = vol == 0 ? 0: 0.4;
-            SoundBlockExplode.volume = vol;
             SoundBlockMetalHard.volume = vol;
             SoundBlock.volume = vol;     
             SoundBlockMetalSoft.volume = vol;               
             SoundBallDown.volume = vol;                 
-            SoundEnde.volume = vol;
+            SoundGameOver.volume = vol;
+            VoiceGameOver.volume = vol;
             SoundWinning.volume = vol;
         }
           
@@ -706,6 +717,17 @@
                         if (ballDown == true && lifes > 0) {
                             pause = false;
                             startGame();
+
+                            switch (lifes){
+                                case 1:
+                                    gameCanvas.style.background = "url('backgrounds/space_level3.jpg')";
+                                    scoreCanvas.style.visibility = "hidden";
+                                break;
+                                case 2:
+                                    gameCanvas.style.background = "url('backgrounds/space_level2.jpg')";
+                                    scoreCanvas.style.visibility = "hidden";
+                                break;
+                            }
                         }
                         break;
                     case 80: //P
