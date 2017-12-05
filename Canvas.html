@@ -8,8 +8,8 @@
     <link rel="stylesheet" type="text/css" href="Style.css">
     <script type="text/javascript" src="levels.json"></script>
     <script>
-//Variables
-    //Field
+        //Variables
+        //Field
         var gameCanvas;
         var gameCtx;
         var scoreBoard;
@@ -20,20 +20,20 @@
         var labelSpeed;
         var labelSound;
 
-    //Paddle
+        //Paddle
         var paddleX = 300;
         var paddleY;
         var paddleWidth = 100;
         var paddleHeight = 20;
         var paddleMove = 20;
 
-    //Ball
+        //Ball
         var ballX;
         var ballY;
         var radius = 10;
         var ballColorGradient;
 
-    //Bricks
+        //Bricks
         var bricks = [];
         var brickHeight = 20;
         var brickWidth = 695 / 12;
@@ -42,21 +42,21 @@
         var brickStartY = 50;
 
         var radiusPwUp = 5;
-        var plusX = brickWidth/2;
+        var plusX = brickWidth / 2;
         var plusY = brickHeight;
         var pwUpDiversity = 2; //range of PowerUp-Bricktypes minus "default"
         var movePwUp = 1;
         var powerUpQueue = [];
         var powerUpTimer = 10000;
 
-    //Movement
+        //Movement
         var moveX = 0;
         var moveY = 0;
         var interval;
         var intervalOverclocking = 10;
         var mouseX;
 
-    //Booleans
+        //Booleans
         var start = true;
         var ballDown = false;
         var spacePress = false;
@@ -69,12 +69,12 @@
         var rightClick = false;
         var leftClick = false;
 
-    //Gamevars
+        //Gamevars
         var lifes = 3;
         var level = 1;
         var score = 0;
 
-    //Sound
+        //Sound
         var vol = 1;
         var SoundBlockMetalHard = new Audio("sounds/Metal_Hard.wav"); // buffers automatically when created
         var SoundBlock = new Audio("sounds/BlockPlop.wav");
@@ -85,7 +85,7 @@
         var SoundBackground = new Audio("sounds/Background.wav");
         var SoundWinning = new Audio("sounds/Win.wav");
 
-//(Brick-)Classes
+        //(Brick-)Classes
         class Brick {
             constructor(x, y) {
                 this.x = x;
@@ -105,7 +105,7 @@
                 this.initialHits = 3;
                 this.hitsToGo = this.initialHits;
                 this.powerUp = Math.floor(Math.random() * 2) + 1; // 1 or 2
-                this.color= "rgb(0, 255, 0)"; // gruen
+                this.color = "rgb(0, 255, 0)"; // gruen
                 this.value = 20;
             }
         }
@@ -123,7 +123,7 @@
         }
 
         class PowerUpBall {
-            constructor(x, y, type){
+            constructor(x, y, type) {
                 this.x = x;
                 this.y = y;
                 this.type = type;
@@ -131,8 +131,8 @@
             }
         }
 
-//Initialize
-    //Initialize
+        //Initialize
+        //Initialize
         function init() {
 
             SoundBackground.play();
@@ -151,7 +151,7 @@
         function initGame() {
             scoreBoard.style.visibility = "visible";
             gameCanvas.style.border = "red 1px solid";
-            
+
             paddleY = gameCanvas.height - paddleHeight - 5;
             paddleX = gameCanvas.width / 2 - paddleWidth / 2;
 
@@ -160,7 +160,7 @@
             startGame();
         }
 
-        function initBallColorGradient(){
+        function initBallColorGradient() {
             ballColorGradient = gameCtx.createLinearGradient(0, 0, gameCanvas.width, 0)
             ballColorGradient.addColorStop("0", "yellow");
             ballColorGradient.addColorStop("0.25", "green");
@@ -170,83 +170,83 @@
         }
 
 
-//Menus
-    //Main-Menu
-    function showMainMenu() {
-        var imageX = (gameCanvas.width / 2) - 230;
-        var imageY = (gameCanvas.height / 2) - 50;
-    
-        //Backgroundimage
-        var background = new Image();
-        background.src = "backgrounds/menu_background.jpeg";
-        background.onload = function() {
-            gameCtx.drawImage(background, 0, 0, gameCanvas.width, gameCanvas.height);
+        //Menus
+        //Main-Menu
+        function showMainMenu() {
+            var imageX = (gameCanvas.width / 2) - 230;
+            var imageY = (gameCanvas.height / 2) - 50;
 
-            scoreBoard.style.visibility = "hidden";
+            //Backgroundimage
+            var background = new Image();
+            background.src = "backgrounds/menu_background.jpeg";
+            background.onload = function () {
+                gameCtx.drawImage(background, 0, 0, gameCanvas.width, gameCanvas.height);
 
-            //Sound Loop
-            interval = setInterval((() => {SoundBackground.currentTime = 0;}), 74000);
+                scoreBoard.style.visibility = "hidden";
 
-            gameCtx.font = "100px Arial";
-            gameCtx.fillStyle = "white";
-            gameCtx.textAlign="center"; 
-            gameCtx.fillText("Arkanoid", (gameCanvas.width / 2), 100);
+                //Sound Loop
+                interval = setInterval((() => { SoundBackground.currentTime = 0; }), 74000);
 
-            gameCtx.font = "40px Arial";
-            gameCtx.fillText("Press Number to start Level", (gameCanvas.width / 2), imageY - 20);
-        };
+                gameCtx.font = "100px Arial";
+                gameCtx.fillStyle = "white";
+                gameCtx.textAlign = "center";
+                gameCtx.fillText("Arkanoid", (gameCanvas.width / 2), 100);
 
-        //Image Level 1
-        var img1 = new Image();
-        img1.src = "backgrounds/space_level1.jpg";
-        img1.onload = function() {
-            gameCtx.font = "40px Arial";
-            gameCtx.drawImage(img1, imageX, imageY, 100, 100);
-            gameCtx.fillText("1", imageX + 50, imageY + 65);
-
-            gameCtx.stroke();
-            
-            imageX += 120;
-            
-        //Image Level 2
-            var img2 = new Image();
-            img2.src = "backgrounds/space_level2.jpg";
-            img2.onload = function() {
                 gameCtx.font = "40px Arial";
-                gameCtx.drawImage(img2, imageX, imageY, 100, 100);
-                gameCtx.fillText("2", imageX + 50, imageY + 65);
+                gameCtx.fillText("Press Number to start Level", (gameCanvas.width / 2), imageY - 20);
+            };
+
+            //Image Level 1
+            var img1 = new Image();
+            img1.src = "backgrounds/space_level1.jpg";
+            img1.onload = function () {
+                gameCtx.font = "40px Arial";
+                gameCtx.drawImage(img1, imageX, imageY, 100, 100);
+                gameCtx.fillText("1", imageX + 50, imageY + 65);
 
                 gameCtx.stroke();
 
                 imageX += 120;
 
-        //Image Level 3
-                var img3 = new Image();
-                img3.src = "backgrounds/space_level3.jpg";
-                img3.onload = function() {
+                //Image Level 2
+                var img2 = new Image();
+                img2.src = "backgrounds/space_level2.jpg";
+                img2.onload = function () {
                     gameCtx.font = "40px Arial";
-                    gameCtx.drawImage(img3, imageX, imageY, 100, 100);
-                    gameCtx.fillText("3", imageX + 50, imageY + 65);
+                    gameCtx.drawImage(img2, imageX, imageY, 100, 100);
+                    gameCtx.fillText("2", imageX + 50, imageY + 65);
 
                     gameCtx.stroke();
 
                     imageX += 120;
 
-                    var img4 = new Image();
-                    img4.src = "backgrounds/space_level4.gif";
-                    img4.onload = function() {
+                    //Image Level 3
+                    var img3 = new Image();
+                    img3.src = "backgrounds/space_level3.jpg";
+                    img3.onload = function () {
                         gameCtx.font = "40px Arial";
-                        gameCtx.drawImage(img4, imageX, imageY, 100, 100);                                
-                        gameCtx.fillText("4", imageX + 50, imageY + 65);
+                        gameCtx.drawImage(img3, imageX, imageY, 100, 100);
+                        gameCtx.fillText("3", imageX + 50, imageY + 65);
 
                         gameCtx.stroke();
+
+                        imageX += 120;
+
+                        var img4 = new Image();
+                        img4.src = "backgrounds/space_level4.gif";
+                        img4.onload = function () {
+                            gameCtx.font = "40px Arial";
+                            gameCtx.drawImage(img4, imageX, imageY, 100, 100);
+                            gameCtx.fillText("4", imageX + 50, imageY + 65);
+
+                            gameCtx.stroke();
+                        };
                     };
                 };
             };
-        };
-    }
+        }
 
-    //Score-Menu
+        //Score-Menu
         function setScoreTable() {
             scoreBoard = document.getElementById("scoreBoard");
 
@@ -262,11 +262,11 @@
             adjustSpeed();
             labelSound.innerHTML = "On";
         }
-        
+
         function startGame() {
 
             ballX = paddleX + (paddleWidth / 2);
-            ballY = paddleY - (radius+1);
+            ballY = paddleY - (radius + 1);
             moveX = 0;
             moveY = 0;
 
@@ -277,13 +277,13 @@
             interval = setInterval(draw, intervalOverclocking);
         }
 
-//Event-Screens
-    //"Fail-Screen"
+        //Event-Screens
+        //"Fail-Screen"
         function WriteFinishScreen() {
             clearInterval(interval);
             gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
             drawPaddle();
-            if(lifes == 0){
+            if (lifes == 0) {
                 gameCtx.font = "30px Arial";
                 gameCtx.fillStyle = ballColorGradient;
                 SoundGameOver.play();
@@ -293,30 +293,30 @@
                 gameCtx.fillText("Looser!", (gameCanvas.width / 2), 50);
                 gameCtx.fillText("Press F5 to Reload", 250, 100);
                 gameCtx.stroke();
-            } else{
+            } else {
                 SoundBallDown.play();
-                SoundBallDown.currentTime=0;
+                SoundBallDown.currentTime = 0;
                 gameCtx.font = "30px Arial";
                 gameCtx.fillText("Ball Down", (gameCanvas.width / 2), 50);
                 gameCtx.fillText("Remaining Lives: " + lifes, (gameCanvas.width / 2), 100);
-                gameCtx.fillText("Space To Restart", (gameCanvas.width / 2) , 150);
+                gameCtx.fillText("Space To Restart", (gameCanvas.width / 2), 150);
                 gameCtx.stroke();
             }
         }
-    //Win-Screen
-        function WriteWinScreen(){
+        //Win-Screen
+        function WriteWinScreen() {
             win = true;
             SoundWinning.play();
-            SoundWinning.currentTime=0;
+            SoundWinning.currentTime = 0;
             gameCtx.font = "30px Arial";
             gameCtx.fillStyle = "white";
             gameCtx.fillText("You Won!", (gameCanvas.width / 2), 50);
-            gameCtx.fillText("Press Space to start the next Level",(gameCanvas.width / 2), 100);
+            gameCtx.fillText("Press Space to start the next Level", (gameCanvas.width / 2), 100);
             clearInterval(interval);
         }
 
-//Draw
-    //draw Game
+        //Draw
+        //draw Game
         function draw() {
             gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 
@@ -325,17 +325,17 @@
             drawPaddle();
             moveBall();
             movePaddle();
-			
-            if(SoundBackground.currentTime >= 74){
+
+            if (SoundBackground.currentTime >= 74) {
                 SoundBackground.currentTime = 0;
             }
         }
 
-    //draw Paddle
+        //draw Paddle
         function drawPaddle() {
 
-            if (bot == true){
-                paddleX = ballX - paddleWidth/2;
+            if (bot == true) {
+                paddleX = ballX - paddleWidth / 2;
 
                 if (paddleX < 0) {
                     paddleX = 0;
@@ -349,7 +349,7 @@
             gameCtx.fillRect(paddleX, paddleY, paddleWidth, paddleHeight);
         }
 
-    //draw Bricks from bricks-Array
+        //draw Bricks from bricks-Array
         function drawBricks() {
             bricks.forEach(brick => {
                 gameCtx.fillStyle = brick.color;
@@ -358,9 +358,9 @@
             });
         }
 
-    //support-method to initialize bricks-Array
-        function setLevel(){
-            switch(level){
+        //support-method to initialize bricks-Array
+        function setLevel() {
+            switch (level) {
                 case 1:
                     setBricks(levelEins);
                     gameCanvas.style.background = "url('backgrounds/space_level1.jpg')";
@@ -373,25 +373,25 @@
                     setBricks(levelDrei);
                     gameCanvas.style.background = "url('backgrounds/space_level3.jpg')";
                     break;
-                case 4: 
+                case 4:
                     setRandomBricks();
                     gameCanvas.style.background = "url('backgrounds/space_level4.gif')";
                     break;
                 default:
                     setBricks(testlvl);
                     return;
-                   
+
             }
         }
 
-        function setBricks(brickArray){
+        function setBricks(brickArray) {
             var posAnX = brickStartX;
             var posAnY = brickStartY;
             brickArray.forEach(row => {
-                if((posAnY + brickHeight) < (gameCanvas.height / 2)){
+                if ((posAnY + brickHeight) < (gameCanvas.height / 2)) {
                     row.forEach(bt => {
-                        if(posAnX + brickWidth + brickStartX <= gameCanvas.width){
-                        addBrick(bt, posAnX, posAnY);
+                        if (posAnX + brickWidth + brickStartX <= gameCanvas.width) {
+                            addBrick(bt, posAnX, posAnY);
                             posAnX += brickWidth + brickDist;
                         }
                     })
@@ -401,11 +401,11 @@
             })
         }
 
-        function setRandomBricks(){
+        function setRandomBricks() {
             var posAnX = brickStartX;
             var posAnY = brickStartY;
-            while((posAnY + brickHeight) < (gameCanvas.height / 2)){
-                while(posAnX + brickWidth + brickStartX <= gameCanvas.width){
+            while ((posAnY + brickHeight) < (gameCanvas.height / 2)) {
+                while (posAnX + brickWidth + brickStartX <= gameCanvas.width) {
                     addBrick(Math.floor(Math.random() * 6), posAnX, posAnY);
                     posAnX += brickWidth + brickDist;
                 }
@@ -414,8 +414,8 @@
             }
         }
 
-        function addBrick(wantedType, posX, posY){
-            switch(wantedType){
+        function addBrick(wantedType, posX, posY) {
+            switch (wantedType) {
                 case 0: break;
                 case 1: bricks.push(new FastBrick(posX, posY)); break;
                 case 2: bricks.push(new HardBrick(posX, posY)); break;
@@ -423,22 +423,22 @@
             }
         }
 
-    //change Brick-Color, depending on hits left 
-        function changeBrickColor(brickTC){
-            var transparency = brickTC.hitsToGo/brickTC.initialHits;
-            switch(brickTC.initialHits){
+        //change Brick-Color, depending on hits left 
+        function changeBrickColor(brickTC) {
+            var transparency = brickTC.hitsToGo / brickTC.initialHits;
+            switch (brickTC.initialHits) {
                 case 3:
                     brickTC.color = `rgba(0, 255, 0, ${transparency})`;
                     break;
                 case 5:
                     brickTC.color = `rgba(0, 255, 255, ${transparency})`;
-                    break; 
+                    break;
             }
         }
 
-    //draw PowerUps
-        function drawPowerUps(){
-            for(var i = 0; i < powerUpQueue.length; i++) {
+        //draw PowerUps
+        function drawPowerUps() {
+            for (var i = 0; i < powerUpQueue.length; i++) {
                 gameCtx.beginPath();
                 gameCtx.fillStyle = powerUpQueue[i].color;
                 gameCtx.arc(powerUpQueue[i].x, powerUpQueue[i].y, radiusPwUp, 0, 2 * Math.PI);
@@ -449,7 +449,7 @@
         }
 
         function pickColorPwUp(type) {
-            switch(type) {
+            switch (type) {
                 case 1: return "PaleGreen";
                 case 2: return "Chartreuse";
                 case 3: return "Chocolate";
@@ -458,12 +458,12 @@
             }
         }
 
-        function spawnPwUp(x, y, type){
-            switch(type) {
-                case 0: 
-                    if(Math.floor(Math.random() * 20) == 0) {
+        function spawnPwUp(x, y, type) {
+            switch (type) {
+                case 0:
+                    if (Math.floor(Math.random() * 20) == 0) {
                         powerUpQueue.push(new PowerUpBall(x, y, type));
-                    } 
+                    }
                     break;
                 default:
                     powerUpQueue.push(new PowerUpBall(x, y, type));
@@ -471,7 +471,7 @@
             }
         }
 
-    //move (detect collisions and draw) Ball
+        //move (detect collisions and draw) Ball
         function moveBall() {
             collisionDetect();
             ballX += moveX;
@@ -479,7 +479,7 @@
             drawBall();
         }
 
-    //draw Ball
+        //draw Ball
         function drawBall() {
             gameCtx.beginPath();
             gameCtx.arc(ballX, ballY, radius, 0, 2 * Math.PI);
@@ -488,11 +488,11 @@
             gameCtx.stroke();
         }
 
-//Collision-Detection
-    //complete check
-        function collisionDetect(){
+        //Collision-Detection
+        //complete check
+        function collisionDetect() {
 
-            if(!rectCollision(paddleX, paddleY, paddleWidth, paddleHeight)){
+            if (!rectCollision(paddleX, paddleY, paddleWidth, paddleHeight)) {
                 if (ballY > gameCanvas.height) {
                     ballDown = true;
                     adjustLife(-1);
@@ -501,25 +501,25 @@
                     if (ballY < (gameCanvas.height / 2) + brickHeight) {
                         brickCollision();
                     }
-                    if ((ballX + radius >= gameCanvas.width && moveX > 0) 
-                    || (ballX - radius <= 0 && moveX < 0)){
+                    if ((ballX + radius >= gameCanvas.width && moveX > 0)
+                        || (ballX - radius <= 0 && moveX < 0)) {
                         moveX *= (-1);
                     }
                     if (ballY <= 0 + radius)
                         moveY *= (-1);
 
-                } 
+                }
             } else {
                 paddleCollision();
             }
-        } 
+        }
 
-        function adjustScore(change){
+        function adjustScore(change) {
             score += change;
             labelScore.innerHTML = score;
         }
 
-        function resetScore(){
+        function resetScore() {
             score = 0;
             labelScore.innerHTML = score;
         }
@@ -534,23 +534,23 @@
             labelLevel.innerHTML = level;
         }
 
-        function adjustSpeed(){
-            var speed = Math.floor(Math.sqrt(moveX*moveX + moveY*moveY)*10)/10;
+        function adjustSpeed() {
+            var speed = Math.floor(Math.sqrt(moveX * moveX + moveY * moveY) * 10) / 10;
             labelSpeed.innerHTML = `${speed}px per ${intervalOverclocking}ms`;
         }
 
-    //support-method brick-collision logic
-        function brickCollision(){
-            for(var i = 0; i<bricks.length; i++) {
+        //support-method brick-collision logic
+        function brickCollision() {
+            for (var i = 0; i < bricks.length; i++) {
                 if (rectCollision(bricks[i].x, bricks[i].y, brickWidth, brickHeight)) {
                     playBrickSound(bricks[i].hitsToGo);
-                    bricks[i].hitsToGo -=1;
+                    bricks[i].hitsToGo -= 1;
                     changeBrickColor(bricks[i]);
-                    if(bricks[i].hitsToGo<=0){
+                    if (bricks[i].hitsToGo <= 0) {
                         adjustScore(bricks[i].value);
                         spawnPwUp(bricks[i].x + plusX, bricks[i].y + plusY, bricks[i].powerUp);
                         bricks.splice(i, 1);
-                        if(bricks.length==0){
+                        if (bricks.length == 0) {
                             draw();
                             ballDown = true;
                             WriteWinScreen();
@@ -561,27 +561,27 @@
             }
         }
 
-    //support-method paddle-collision logic
-        function paddleCollision(){
-            if(ballY + radius < paddleY + (paddleHeight/2)){
-                ballY -= ballY + radius - paddleY - 0,5;
+        //support-method paddle-collision logic
+        function paddleCollision() {
+            if (ballY + radius < paddleY + (paddleHeight / 2)) {
+                ballY -= ballY + radius - paddleY - 0, 5;
             } else {
-                ballY += (paddleHeight/2) + 0,5;
+                ballY += (paddleHeight / 2) + 0, 5;
                 ballDown = true;
                 adjustLife(-1);
                 WriteFinishScreen();
             }
         }
 
-        function powerPaddleCollisionhandler(index){
-            if(powerUpQueue[index].y + radiusPwUp >= paddleY 
-                && powerUpQueue[index].y < paddleY + paddleHeight 
-                && powerUpQueue[index].x + radiusPwUp/2 >= paddleX 
-                && powerUpQueue[index].x - radiusPwUp/2 <= paddleX + paddleWidth){
+        function powerPaddleCollisionhandler(index) {
+            if (powerUpQueue[index].y + radiusPwUp >= paddleY
+                && powerUpQueue[index].y < paddleY + paddleHeight
+                && powerUpQueue[index].x + radiusPwUp / 2 >= paddleX
+                && powerUpQueue[index].x - radiusPwUp / 2 <= paddleX + paddleWidth) {
                 activatePwUp(powerUpQueue[index].type);
                 powerUpQueue.splice(index, 1);
             } else {
-                if(powerUpQueue[index].y < gameCanvas.height){
+                if (powerUpQueue[index].y < gameCanvas.height) {
                     powerUpQueue[index].y += movePwUp;
                 } else {
                     powerUpQueue.splice(index, 1);
@@ -589,163 +589,163 @@
             }
         }
 
-    //support-method rect-collision (paddle & bricks) check
-        function rectCollision(rectX, rectY, rectW, rectH){
+        //support-method rect-collision (paddle & bricks) check
+        function rectCollision(rectX, rectY, rectW, rectH) {
 
-            var kathetenL = Math.sqrt((radius*radius)/2);
+            var kathetenL = Math.sqrt((radius * radius) / 2);
 
-            if(ballX >= rectX && ballX <= rectX + rectW &&                          //Ball hits...
+            if (ballX >= rectX && ballX <= rectX + rectW &&                          //Ball hits...
                 ((ballY - radius <= rectY + rectH && ballY - radius > rectY)        //... from below
-                ||(ballY + radius <= rectY + rectH && ballY + radius > rectY))){    //... from above
-                    moveY *= -1;
-                    return true;
+                    || (ballY + radius <= rectY + rectH && ballY + radius > rectY))) {    //... from above
+                moveY *= -1;
+                return true;
             }
-            if(ballY >= rectY && ballY <= rectY + rectH &&                          //Ball hits...
+            if (ballY >= rectY && ballY <= rectY + rectH &&                          //Ball hits...
                 ((ballX - radius <= rectX + rectW && ballX - radius > rectX)        //... from left 
-                ||(ballX + radius < rectX + rectW && ballX + radius >= rectX))){    //... from right
-                    moveX *= -1;
-                    return true;
+                    || (ballX + radius < rectX + rectW && ballX + radius >= rectX))) {    //... from right
+                moveX *= -1;
+                return true;
             }
-            if(ballX + kathetenL >= rectX && ballX + kathetenL < rectX + rectW){        //Ball hits left...
-                if(ballY - kathetenL <= rectY + rectH && ballY - kathetenL > rectY){    //... lower corner
-                    if(moveX>0)
+            if (ballX + kathetenL >= rectX && ballX + kathetenL < rectX + rectW) {        //Ball hits left...
+                if (ballY - kathetenL <= rectY + rectH && ballY - kathetenL > rectY) {    //... lower corner
+                    if (moveX > 0)
                         moveX *= -1;
-                    if(moveY<0)
+                    if (moveY < 0)
                         moveY *= -1;
                     return true;
                 }
-                if(ballY + kathetenL < rectY + rectH && ballY + kathetenL >= rectY){    //... upper corner
-                    if(moveX>0)
+                if (ballY + kathetenL < rectY + rectH && ballY + kathetenL >= rectY) {    //... upper corner
+                    if (moveX > 0)
                         moveX *= -1;
-                    if(moveY>0)
+                    if (moveY > 0)
                         moveY *= -1;
-                    
+
                     return true;
                 }
-                return false;    
+                return false;
             }
-            if(ballX - kathetenL > rectX && ballX - kathetenL <= rectX + rectW){        //Ball hits right...  
-                if(ballY - kathetenL <= rectY + rectH && ballY - kathetenL > rectY){    //... lower corner
-                    if(moveX<0)
+            if (ballX - kathetenL > rectX && ballX - kathetenL <= rectX + rectW) {        //Ball hits right...  
+                if (ballY - kathetenL <= rectY + rectH && ballY - kathetenL > rectY) {    //... lower corner
+                    if (moveX < 0)
                         moveX *= -1;
-                    if(moveY<0)
+                    if (moveY < 0)
                         moveY *= -1;
                     return true;
                 }
-                if(ballY + kathetenL < rectY + rectH && ballY + kathetenL >= rectY){    //... upper corner
-                    if(moveX<0)
+                if (ballY + kathetenL < rectY + rectH && ballY + kathetenL >= rectY) {    //... upper corner
+                    if (moveX < 0)
                         moveX *= -1;
-                    if(moveY>0)
+                    if (moveY > 0)
                         moveY *= -1;
                     return true;
-                }    
+                }
             }
             return false;
         }
 
-//Sounds
-        function playBrickSound(hTG){ //hTG = hits to go
-            switch(hTG){
+        //Sounds
+        function playBrickSound(hTG) { //hTG = hits to go
+            switch (hTG) {
                 case 1:
                     SoundBlock.play();
-                    SoundBlock.currentTime=0;
+                    SoundBlock.currentTime = 0;
                     break;
                 case 2: case 3:
                     SoundBlockMetalSoft.play();
-                    SoundBlockMetalSoft.currentTime=0;
+                    SoundBlockMetalSoft.currentTime = 0;
                     break;
                 default:
                     SoundBlockMetalHard.play();
-                    SoundBlockMetalHard.currentTime=0;
+                    SoundBlockMetalHard.currentTime = 0;
                     break;
             }
         }
 
-//Paddle follows mousespacepress
+        //Paddle follows mousespacepress
         function show_position(event) {
             mouseX = document.all ? event.offsetX : event.pageX;
 
-            if (mouseX <= paddleWidth/2) {
-            paddleX = 0;
-            if (leerpress == false) {
-                ballX = paddleX + paddleWidth/2;
-            }
-            }
-            else if (mouseX >= gameCanvas.width-paddleWidth/2) {
-                paddleX = gameCanvas.width-paddleWidth;
+            if (mouseX <= paddleWidth / 2) {
+                paddleX = 0;
                 if (leerpress == false) {
-                    ballX = paddleX + paddleWidth/2;
+                    ballX = paddleX + paddleWidth / 2;
+                }
+            }
+            else if (mouseX >= gameCanvas.width - paddleWidth / 2) {
+                paddleX = gameCanvas.width - paddleWidth;
+                if (leerpress == false) {
+                    ballX = paddleX + paddleWidth / 2;
                 }
             }
             else {
                 if (leerpress == false) {
                     ballX = mouseX;
                 }
-                paddleX = mouseX - paddleWidth/2;
-            } 
+                paddleX = mouseX - paddleWidth / 2;
+            }
         }
 
-//Check paddle width and position
-        function activatePwUp(type){
+        //Check paddle width and position
+        function activatePwUp(type) {
             var change = 2;
-            switch(type){
+            switch (type) {
                 case 0: adjustLife(1); break;
                 case 1:
-                    if(intervalOverclocking >= 10/change) {
+                    if (intervalOverclocking >= 10 / change) {
                         intervalOverclocking /= change;
                         adjustSpeed();
-                        setTimeout(function(){intervalOverclocking *= change; adjustSpeed();}, powerUpTimer);
+                        setTimeout(function () { intervalOverclocking *= change; adjustSpeed(); }, powerUpTimer);
                     }
                     break;
                 case 2:
-                    if(intervalOverclocking <= 10*change) {
+                    if (intervalOverclocking <= 10 * change) {
                         intervalOverclocking *= change;
                         adjustSpeed();
-                        setTimeout(function(){intervalOverclocking /= change; adjustSpeed();}, powerUpTimer);
+                        setTimeout(function () { intervalOverclocking /= change; adjustSpeed(); }, powerUpTimer);
                     }
                     break;
                 case 3:
-                    if(paddleWidth <= 100) {
+                    if (paddleWidth <= 100) {
                         paddleWidth *= change;
-                        paddleX -= (paddleWidth / (2*change)); 
-                        if(paddleX < 0){ paddleX = 0 } 
-                        else { if(paddleX + paddleWidth > gameCanvas.width){paddleX = gameCanvas.width - paddle.width} }
-                        setTimeout(function(){paddleWidth /= change; paddleX += (paddleWidth / (2*change))}, powerUpTimer);
-                    } 
+                        paddleX -= (paddleWidth / (2 * change));
+                        if (paddleX < 0) { paddleX = 0 }
+                        else { if (paddleX + paddleWidth > gameCanvas.width) { paddleX = gameCanvas.width - paddle.width } }
+                        setTimeout(function () { paddleWidth /= change; paddleX += (paddleWidth / (2 * change)) }, powerUpTimer);
+                    }
                     break;
                 case 4:
-                    if(paddleWidth >= 100) {
-                        paddleWidth /= change; 
-                        paddleX += (paddleWidth / (2*change)); 
-                        if(paddleX < 0){ paddleX = 0 } 
-                        else { if(paddleX + paddleWidth > gameCanvas.width){paddleX = gameCanvas.width - paddle.width} }
-                        setTimeout(function(){paddleWidth *= change; paddleX -= (paddleWidth / (2*change));}, powerUpTimer);
+                    if (paddleWidth >= 100) {
+                        paddleWidth /= change;
+                        paddleX += (paddleWidth / (2 * change));
+                        if (paddleX < 0) { paddleX = 0 }
+                        else { if (paddleX + paddleWidth > gameCanvas.width) { paddleX = gameCanvas.width - paddle.width } }
+                        setTimeout(function () { paddleWidth *= change; paddleX -= (paddleWidth / (2 * change)); }, powerUpTimer);
                     }
                     break;
                 default: break;
             }
         }
-  
+
         function soundHandler() {
-            if(vol > 0){
+            if (vol > 0) {
                 vol = 0;
                 labelSound.innerHTML = "Off";
-            } else{ 
+            } else {
                 vol = 1;
                 labelSound.innerHTML = "On";
             }
-            SoundBackground.volume = vol == 0 ? 0: 0.4;
+            SoundBackground.volume = vol == 0 ? 0 : 0.4;
             SoundBlockMetalHard.volume = vol;
-            SoundBlock.volume = vol;     
-            SoundBlockMetalSoft.volume = vol;               
-            SoundBallDown.volume = vol;                 
+            SoundBlock.volume = vol;
+            SoundBlockMetalSoft.volume = vol;
+            SoundBallDown.volume = vol;
             SoundGameOver.volume = vol;
             VoiceGameOver.volume = vol;
             SoundWinning.volume = vol;
         }
 
         function movePaddle() { // Instant Movement of the Paddle
-            if (rightClick == true){
+            if (rightClick == true) {
                 if ((paddleX + paddleWidth) < gameCanvas.width) {
                     paddleX += paddleMove;
                     if (moveX == 0 && moveY == 0)
@@ -753,7 +753,7 @@
                 }
             }
 
-            if (leftClick == true){
+            if (leftClick == true) {
                 if (paddleX >= 10) {
                     paddleX -= paddleMove;
                     if (moveX == 0 && moveY == 0)
@@ -762,7 +762,7 @@
             }
         }
 
-        function keyPaddle(ev){ // Key Up Keyhandler
+        function keyPaddle(ev) { // Key Up Keyhandler
             if (ev.keyCode == 68 || ev.keyCode == 39) {
                 rightClick = false;
             }
@@ -770,55 +770,55 @@
                 leftClick = false;
             }
         }
-        
-          
-//key-handlerspacepress
+
+
+        //key-handlerspacepress
         function keyHandler(ev) {
             var key_code = ev.keyCode;
 
-            if(key_code == 77){
+            if (key_code == 77) {
                 soundHandler();
             }
-          
-            if(inMainMenu) {
 
-                switch(key_code){
+            if (inMainMenu) {
+
+                switch (key_code) {
                     case 49: //1
                     case 97: //Numpad 1
-                    level = 1;
-                    break;
+                        level = 1;
+                        break;
                     case 50: //2
                     case 98: //Numpad 2
-                    level = 2;
-                    break;
+                        level = 2;
+                        break;
                     case 51: //3
                     case 99: //Numpad 3
-                    level = 3;
-                    break;
+                        level = 3;
+                        break;
                     case 52: //4
                     case 100: //Numpad 4
-                    level = 4;
-                    break;
+                        level = 4;
+                        break;
                     default:
-                    level = 0
-                    break; // Anpassen
+                        level = 0
+                        break; // Anpassen
                 }
-                    
+
                 inMainMenu = false;
                 initGame();
 
             } else {
-                switch (key_code){                
+                switch (key_code) {
                     case 68: //D
                     case 39: //Right Arrow
                         rightClick = true;
-                        break; 
+                        break;
                     case 65: //A
                     case 37: //Left Arrow
                         leftClick = true;
                         break;
                     case 80: //P
-                        if(pause == false && ballDown == false) {
+                        if (pause == false && ballDown == false) {
                             gameCtx.font = "60px Arial";
                             gameCtx.fillStyle = "white";
                             gameCtx.fillText("Pause", 300, 300);
@@ -826,7 +826,7 @@
                             clearInterval(interval);
                             SoundBackground.pause();
                         } else {
-                            if(pause ==  true && ballDown == false){
+                            if (pause == true && ballDown == false) {
                                 pause = false;
                                 interval = setInterval(draw, intervalOverclocking);
                                 SoundBackground.play();
@@ -842,13 +842,13 @@
                             start = false;
                         } else {
                             if (ballDown == true && lifes > 0) {
-                                if(win == false){
+                                if (win == false) {
                                     pause = false;
                                     startGame();
                                 } else {
                                     win = false;
                                     resetScore();
-                                    if(level < 4){
+                                    if (level < 4) {
                                         level++;
                                     }
                                     initGame();
@@ -857,13 +857,13 @@
                         }
                         break;
                     case 66: //B
-                      bot = !bot;
-                      break;
+                        bot = !bot;
+                        break;
                 }
             }
         }
 
-//Execution
+        //Execution
         document.addEventListener("DOMContentLoaded", init, false);
         document.addEventListener("mousemove", show_position, false);
         document.addEventListener("keydown", keyHandler, false);
@@ -873,81 +873,87 @@
 
 <body>
     <element onmousemove="gameCanvas">
-    <element onkeydown="gameCanvas">
-    <element onkeyup="gameCanvas">
-    <table>
-            <tr>
-                <td>
-                    <canvas id="gameCanvas" width="800" height="600"></canvas>
-                </td>
-                <td>
-                    <table id="info">
-                        <tr>
-                            <td>
-                                <table id="scoreBoard">
-                                    <tr>
-                                        <td style="text-decoration:underline;font-weight:bold;font-size:20px;">
-                                            Stats:
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            Score:
-                                        </td>
-                                        <td id="score"/>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            Lifes:
-                                        </td>
-                                        <td id="lifes"/>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            Level:
-                                        </td>
-                                        <td id="level"/>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            Speed:
-                                        </td>
-                                        <td id="speed"/>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            Sound:
-                                        </td>
-                                        <td id="sound"/>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <table id="help">
-                                    <tr>    
-                                        <headline>Help:</headline> <p/>                            
-                                        <headline2>Controls:</headline2> <br/>
-                                        <htest>Spiel:</htest> <br/>
-                                        - A, D <br/>
-                                        - Arrows <br/>
-                                        - Mouse <p/>
-                                        <htest>Start: </htest> <br/>
-                                        - Space <p/>
-                                        <htest>Break: </htest> <br/>
-                                        - P <p/>
-                                        <htest>Sound on/off: </htest> <br/>
-                                        - M <p/>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                    </table>
+        <element onkeydown="gameCanvas">
+            <element onkeyup="gameCanvas">
+                <table>
+                    <tr>
+                        <td>
+                            <canvas id="gameCanvas" width="800" height="600"></canvas>
+                        </td>
+                        <td>
+                            <table id="info">
+                                <tr>
+                                    <td>
+                                        <table id="scoreBoard">
+                                            <tr>
+                                                <td style="text-decoration:underline;font-weight:bold;font-size:20px;">
+                                                    Stats:
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Score:
+                                                </td>
+                                                <td id="score" />
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Lifes:
+                                                </td>
+                                                <td id="lifes" />
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Level:
+                                                </td>
+                                                <td id="level" />
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Speed:
+                                                </td>
+                                                <td id="speed" />
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Sound:
+                                                </td>
+                                                <td id="sound" />
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <table id="help">
+                                            <tr>
+                                                <headline>Help:</headline>
+                                                <p/>
+                                                <headline2>Controls:</headline2>
+                                                <br/>
+                                                <htest>Spiel:</htest>
+                                                <br/> - A, D
+                                                <br/> - Arrows
+                                                <br/> - Mouse
+                                                <p/>
+                                                <htest>Start: </htest>
+                                                <br/> - Space
+                                                <p/>
+                                                <htest>Break: </htest>
+                                                <br/> - P
+                                                <p/>
+                                                <htest>Sound on/off: </htest>
+                                                <br/> - M
+                                                <p/>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
 
-                </td>
-            </tr>
-        </table>
+                        </td>
+                    </tr>
+                </table>
 </body>
 
 </html>
